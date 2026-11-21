@@ -1,0 +1,1 @@
+{"expires_at":1797681600,"organizations":[{"id":7,"name":"Ana's apps","plan":"free","plan_until":null,"role":"owner"}],"project":{"id":"3f9a1c7e20bd","name":"Tilefall"},"token_from":"config","url":"http://127.0.0.1:8090","user":{"email":"ana@example.com","id":1,"name":"Ana"}}

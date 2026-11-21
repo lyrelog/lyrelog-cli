@@ -1,0 +1,13 @@
+Player u_8f2a in Tilefall
+  1,530 events in all, first Oct 10, last 40s ago
+
+Sessions last 7 days
+Started   Length  Events  Errors  Device      Version  From → to                       Session
+20m ago  19m 20s      48       1  iPhone17,1  2.4.1    app.opened → purchase.failed …  s-u_8f2a-0001
+
+Latest events
+11:59:20 ▌error    purchase.failed  checkout  amount=4.99 reason="card declined"
+11:57:00 ▌info     game.finished    game      board.size=9 result=win
+10:00:00 ▌warning  sync.slow        sync      ms=5400
+
+Everything of theirs: lyrelog events --user u_8f2a --since 30d

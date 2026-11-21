@@ -1,0 +1,28 @@
+▌ purchase.failed  error
+  checkout
+
+  Time         2026-11-19 11:59:20.000 UTC  40s ago
+  Event        0b7e3d52-8c1a-4f0e-9d3b-5a2f8e1c7d40
+  Player       u_8f2a
+  Session      s-u_8f2a
+  Install      inst-1
+  App          com.example.tilefall 2.4.1 (241)
+  Device       iPhone17,1 iOS 26.1
+  Locale       es_ES
+  Country      ES
+  Environment  production
+  Platform     ios
+
+Attributes
+  {
+    "reason": "card declined",
+    "amount": 4.99
+  }
+
+Payload
+  {
+    "stripe": {
+      "code": "card_declined",
+      "decline_code": "insufficient_funds"
+    }
+  }

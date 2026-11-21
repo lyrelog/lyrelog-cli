@@ -1,0 +1,5 @@
+/bin/
+/dist/
+
+# Agents guide: kept on the maintainer's machine, not in the public repo
+CLAUDE.md

@@ -1,0 +1,8 @@
+✓ Made the access token GitHub Actions, it expires Feb 17, 2027
+
+  Token:
+
+    lyr_tok_made_once_0000000000000000
+
+  Copy it now: Lyrelog shows it only once. It's a secret: store it in your CI's secrets as LYRELOG_TOKEN.
+

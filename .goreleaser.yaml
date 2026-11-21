@@ -1,0 +1,84 @@
+# GoReleaser v2.20.2 (pinned in .github/workflows/release.yml). A v* tag runs it in GitHub
+# Actions: binaries, checksums, a draft release, and the cask in lyrelog/homebrew-tap.
+# Locally, without publishing: goreleaser release --snapshot --clean
+version: 2
+
+project_name: lyrelog
+
+before:
+  hooks:
+    - go vet ./...
+
+builds:
+  - id: lyrelog
+    main: ./cmd/lyrelog
+    binary: lyrelog
+    env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    # Read by lyrelog version (internal/cli: Version, Commit, Date).
+    ldflags:
+      - -s -w
+      - -X go.lyrelog.com/cli/internal/cli.Version={{ .Version }}
+      - -X go.lyrelog.com/cli/internal/cli.Commit={{ .ShortCommit }}
+      - -X go.lyrelog.com/cli/internal/cli.Date={{ .Date }}
+    goos: [darwin, linux, windows]
+    goarch: [amd64, arm64]
+    ignore:
+      - goos: windows
+        goarch: arm64
+    mod_timestamp: "{{ .CommitTimestamp }}"
+
+archives:
+  - id: lyrelog
+    formats: [tar.gz]
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+checksum:
+  name_template: checksums.txt
+  algorithm: sha256
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+
+release:
+  github:
+    owner: lyrelog
+    name: lyrelog-cli
+  draft: true
+
+# brew install lyrelog/tap/lyrelog. GoReleaser deprecated `brews` (formulas) in v2.16
+# in favour of casks, so this is a cask. The tap repository must exist, and the workflow needs
+# HOMEBREW_TAP_TOKEN (a token that can write to it) before the first release.
+homebrew_casks:
+  - name: lyrelog
+    binaries: [lyrelog]
+    homepage: https://lyrelog.com
+    description: "Lyrelog from your terminal: search events, follow them live, read errors, sessions and people"
+    directory: Casks
+    commit_msg_template: "lyrelog {{ .Tag }}"
+    commit_author:
+      name: Lyrelog
+      email: hello@lyrelog.com
+    repository:
+      owner: lyrelog
+      name: homebrew-tap
+      token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
+    # The binaries aren't notarized yet: without this macOS refuses to run one downloaded by brew.
+    hooks:
+      post:
+        install: |
+          if OS.mac?
+            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/lyrelog"]
+          end
