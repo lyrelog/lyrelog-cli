@@ -34,6 +34,15 @@ type File struct {
 	// URL is the server used when neither --url nor LYRELOG_URL says otherwise.
 	URL   string           `json:"url,omitempty"`
 	Hosts map[string]*Host `json:"hosts,omitempty"`
+	// Skills is where `lyrelog skills install` puts the skills, as the person chose it.
+	Skills *SkillsChoice `json:"skills,omitempty"`
+}
+
+// SkillsChoice is a saved answer to "where, and for which agents": Scope is "user" (the home
+// folder, every project) or "project" (the folder install runs in); Agents are agent ids.
+type SkillsChoice struct {
+	Scope  string   `json:"scope"`
+	Agents []string `json:"agents"`
 }
 
 // Dir is where the file lives: LYRELOG_CONFIG_DIR, else $XDG_CONFIG_HOME/lyrelog, else

@@ -12,6 +12,7 @@ import (
 
 	"github.com/spf13/cobra"
 
+	"go.lyrelog.com/cli/internal/config"
 	"go.lyrelog.com/cli/internal/skills"
 )
 
@@ -26,11 +27,12 @@ type skillAgent struct {
 	id, name        string
 	global, project string
 	detect          []string
+	also            string // other agents that read the same folder
 }
 
 var skillAgents = []skillAgent{
 	{id: "claude-code", name: "Claude Code", global: ".claude/skills", project: ".claude/skills", detect: []string{".claude"}},
-	{id: "codex", name: "Codex (and other agents reading ~/.agents)", global: ".agents/skills", project: ".agents/skills", detect: []string{".codex", ".agents"}},
+	{id: "codex", name: "Codex", global: ".agents/skills", project: ".agents/skills", detect: []string{".codex", ".agents"}, also: "Cline, Warp, Zed and others read it too"},
 	{id: "cursor", name: "Cursor", global: ".cursor/skills", project: ".agents/skills", detect: []string{".cursor"}},
 	{id: "gemini-cli", name: "Gemini CLI", global: ".gemini/skills", project: ".agents/skills", detect: []string{".gemini"}},
 	{id: "github-copilot", name: "GitHub Copilot", global: ".copilot/skills", project: ".agents/skills", detect: []string{".copilot"}},
@@ -186,13 +188,9 @@ func (a *App) skillTargets(set skills.Set, f skillTargetFlags, verb string) ([]s
 		// A project's folders: Claude Code's, and the shared .agents/skills most others read.
 		agents = []skillAgent{skillAgents[0], skillAgents[1]}
 	default:
-		home := base
 		for _, ag := range skillAgents {
-			for _, d := range ag.detect {
-				if st, err := os.Stat(filepath.Join(home, filepath.FromSlash(d))); err == nil && st.IsDir() {
-					agents = append(agents, ag)
-					break
-				}
+			if agentFound(base, ag) {
+				agents = append(agents, ag)
 			}
 		}
 		if len(agents) == 0 {
@@ -225,18 +223,27 @@ type skillResult struct {
 
 func (a *App) skillsInstallCommand() *cobra.Command {
 	var f skillTargetFlags
+	var choose bool
 	cmd := &cobra.Command{
 		Use:   "install",
 		Short: "Install the skills for your coding agents",
-		Long: `Copies the skills into the folders your coding agents read: for your user by default,
-for every agent found in your home folder, or into this project with --project. A skill
-already there is replaced by this version; nothing else in those folders is touched.`,
+		Long: `Copies the skills into the folders your coding agents read. The first time, at a
+terminal, it asks where (for you, in every project, or only in this project) and for which
+agents, with the ones found on this computer ticked; the answer is saved and used from then
+on (--choose asks again). --agent and --project override it. Without a person to ask (an
+agent, CI), it uses the saved answer, else the agents found in your home folder.
+
+A skill already there is replaced by the newest; nothing else in those folders is touched.`,
 		Example: `  lyrelog skills install
+  lyrelog skills install --choose
   lyrelog skills install --agent claude-code
   lyrelog skills install --project --skill lyrelog-integrate`,
 		Args:        cobra.NoArgs,
 		Annotations: map[string]string{"no-setup": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := a.applySkillsChoice(cmd, &f, choose, true); err != nil {
+				return err
+			}
 			set := a.loadSkills(cmd.Context(), f.offline)
 			dirs, chosen, err := a.skillTargets(set, f, "install")
 			if err != nil {
@@ -267,6 +274,7 @@ already there is replaced by this version; nothing else in those folders is touc
 	}
 	f.bind(cmd, "install")
 	cmd.Flags().BoolVar(&f.offline, "offline", false, "install the skills inside the CLI instead of the newest from GitHub")
+	cmd.Flags().BoolVar(&choose, "choose", false, "ask again where and for which agents (the answer is saved)")
 	return cmd
 }
 
@@ -280,6 +288,9 @@ func (a *App) skillsRemoveCommand() *cobra.Command {
 		Args:        cobra.NoArgs,
 		Annotations: map[string]string{"no-setup": "true"},
 		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := a.applySkillsChoice(cmd, &f, false, false); err != nil {
+				return err
+			}
 			// Removing needs only the names, which the bundled copy has.
 			dirs, chosen, err := a.skillTargets(skills.Bundled(), f, "remove")
 			if err != nil {
@@ -368,8 +379,128 @@ func (a *App) listSkills(set skills.Set) error {
 		}
 		fmt.Fprintln(a.out)
 	}
+	a.loadConfig()
+	if saved := a.savedSkillsChoice(); saved != nil {
+		where := "for you, in every project"
+		if saved.Scope == "project" {
+			where = "in the project you run it in"
+		}
+		names := make([]string, 0, len(saved.Agents))
+		for _, id := range saved.Agents {
+			if i := slices.IndexFunc(skillAgents, func(s skillAgent) bool { return s.id == id }); i >= 0 {
+				names = append(names, skillAgents[i].name)
+			}
+		}
+		fmt.Fprintf(a.out, "%s %s, %s\n\n", th.Dim("Install puts them:"), strings.Join(names, ", "), where)
+		a.tip("Update them with", "lyrelog skills install, or choose again with --choose")
+		return nil
+	}
 	a.tip("Install or update them for your agents with", "lyrelog skills install")
 	return nil
+}
+
+// applySkillsChoice settles where and for which agents when --agent and --project don't say:
+// the saved answer, or (ask, at a terminal, the first time or with --choose) the person's
+// answer, saved for next time. Otherwise it leaves the defaults: the agents found at home.
+func (a *App) applySkillsChoice(cmd *cobra.Command, f *skillTargetFlags, choose, ask bool) error {
+	if cmd.Flags().Changed("agent") || cmd.Flags().Changed("project") {
+		return nil
+	}
+	a.loadConfig()
+	if saved := a.savedSkillsChoice(); saved != nil && !choose {
+		f.project, f.agents = saved.Scope == "project", saved.Agents
+		return nil
+	}
+	if !ask {
+		return nil
+	}
+	if !a.mode.Interactive {
+		if choose {
+			return usagef("--choose asks you, and nobody can answer here").hint("Pass --agent and --project instead.")
+		}
+		return nil
+	}
+	ctx := cmd.Context()
+	home := a.homeDir()
+	wd, _ := os.Getwd()
+	where, err := a.choose(ctx, "Where should the skills go?", []choice{
+		{label: "For you, in every project", hint: "your home folder"},
+		{label: "Only in this project", hint: a.homeRel(wd) + ", for everyone who works on it"},
+	}, false)
+	if err != nil {
+		return err
+	}
+	project := where[0] == 1
+	items := make([]choice, len(skillAgents))
+	for i, ag := range skillAgents {
+		rel := ag.global
+		folder := filepath.Join("~", filepath.FromSlash(rel))
+		if project {
+			rel = ag.project
+			folder = filepath.FromSlash(rel)
+		}
+		hint := folder
+		if ag.also != "" {
+			hint += ", " + ag.also
+		}
+		items[i] = choice{label: ag.name, hint: hint, checked: home != "" && agentFound(home, ag)}
+	}
+	picked, err := a.choose(ctx, "For which agents?", items, true)
+	if err != nil {
+		return err
+	}
+	f.project, f.agents = project, nil
+	for _, i := range picked {
+		f.agents = append(f.agents, skillAgents[i].id)
+	}
+	scope := "user"
+	if project {
+		scope = "project"
+	}
+	if a.cfg != nil {
+		a.cfg.Skills = &config.SkillsChoice{Scope: scope, Agents: f.agents}
+		if err := a.cfg.Save(a.cfgPath); err == nil {
+			fmt.Fprintln(a.errOut, a.theme.Dim("Saved for next time; lyrelog skills install --choose changes it."))
+		}
+	}
+	return nil
+}
+
+// loadConfig reads the settings file for commands that skip setup (no sign-in needed); a.cfg
+// stays nil if it can't be read.
+func (a *App) loadConfig() {
+	if a.cfg != nil {
+		return
+	}
+	dir, err := config.Dir(a.Getenv)
+	if err != nil {
+		return
+	}
+	a.cfgPath = filepath.Join(dir, "config.json")
+	a.cfg, _ = config.Load(a.cfgPath)
+}
+
+func (a *App) savedSkillsChoice() *config.SkillsChoice {
+	if a.cfg == nil || a.cfg.Skills == nil || len(a.cfg.Skills.Agents) == 0 {
+		return nil
+	}
+	return a.cfg.Skills
+}
+
+func (a *App) homeDir() string {
+	if h := a.Getenv("HOME"); h != "" {
+		return h
+	}
+	return a.Getenv("USERPROFILE")
+}
+
+func agentFound(home string, ag skillAgent) bool {
+	for _, d := range ag.detect {
+		if st, err := os.Stat(filepath.Join(home, filepath.FromSlash(d))); err == nil && st.IsDir() {
+			return true
+		}
+	}
+	return false
 }
 
 // writeSkill replaces dest with the skill's files: written next to it first, then swapped in,

@@ -149,8 +149,9 @@ Gemini CLI, GitHub Copilot, OpenCode and others to add the SDK, investigate an e
 CLI, get the right key or token, and set up alerts:
 
 ```bash
-lyrelog skills install            # the newest, for every agent on this computer
+lyrelog skills install            # asks where and for which agents, then remembers
 lyrelog skills install --project  # into this project (.claude/skills and .agents/skills)
+lyrelog skills install --choose   # choose again
 lyrelog skills                    # what's installed where
 ```
 

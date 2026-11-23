@@ -127,3 +127,67 @@ func TestSkillsWithoutAnAgentSaysHow(t *testing.T) {
 		t.Fatalf("exit %d: %s", code, errOut)
 	}
 }
+
+func TestSkillsAskWhereAndWhichThenRemember(t *testing.T) {
+	f := newFake(t)
+	home := t.TempDir()
+	_ = os.MkdirAll(filepath.Join(home, ".cursor"), 0o755)
+	cfgDir := t.TempDir()
+	env := map[string]string{"HOME": home, "NO_COLOR": "1", "LYRELOG_CONFIG_DIR": cfgDir}
+	// Where: 1 (for you). Which: 1 and 3 (Claude Code, Cursor).
+	_, errOut, code := f.run(t, runOpts{tty: true, env: env, stdin: "1\n1,3\n", noConfig: true}, "skills", "install", "--offline")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if !strings.Contains(errOut, "[x] Cursor") || !strings.Contains(errOut, "[ ] Claude Code") {
+		t.Errorf("the agents found should start ticked:\n%s", errOut)
+	}
+	for _, d := range []string{".claude/skills", ".cursor/skills"} {
+		if _, err := os.Stat(filepath.Join(home, d, "lyrelog-keys", "SKILL.md")); err != nil {
+			t.Errorf("not installed in ~/%s", d)
+		}
+	}
+	raw, _ := os.ReadFile(filepath.Join(cfgDir, "config.json"))
+	var saved struct {
+		Skills struct {
+			Scope  string   `json:"scope"`
+			Agents []string `json:"agents"`
+		} `json:"skills"`
+	}
+	_ = json.Unmarshal(raw, &saved)
+	if saved.Skills.Scope != "user" || strings.Join(saved.Skills.Agents, ",") != "claude-code,cursor" {
+		t.Fatalf("the choice wasn't saved: %s", raw)
+	}
+	// Next time: no question, the same folders, even with nothing to read on stdin.
+	_ = os.RemoveAll(filepath.Join(home, ".claude", "skills"))
+	_, errOut, code = f.run(t, runOpts{tty: true, env: env, noConfig: true}, "skills", "install", "--offline")
+	if code != 0 || strings.Contains(errOut, "Where should") {
+		t.Fatalf("asked again, or failed (exit %d): %s", code, errOut)
+	}
+	if _, err := os.Stat(filepath.Join(home, ".claude/skills/lyrelog-keys/SKILL.md")); err != nil {
+		t.Error("the saved choice wasn't used")
+	}
+	// --agent wins over the saved choice.
+	_, errOut, code = f.run(t, runOpts{tty: true, env: env, noConfig: true}, "skills", "install", "--offline", "--agent", "gemini-cli")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if _, err := os.Stat(filepath.Join(home, ".gemini/skills/lyrelog-keys/SKILL.md")); err != nil {
+		t.Error("--agent was ignored")
+	}
+}
+
+func TestSkillsChooseNeedsAPerson(t *testing.T) {
+	f := newFake(t)
+	_, errOut, code := f.run(t, runOpts{env: map[string]string{"HOME": t.TempDir()}}, "skills", "install", "--offline", "--choose")
+	if code != ExitUsage || !strings.Contains(errOut, "--choose") {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+}
+
+func TestKeysTypedFastAreSplit(t *testing.T) {
+	got := strings.Join(splitKeys([]byte("\x1b[B\x1b[B a\r")), "|")
+	if got != "\x1b[B|\x1b[B| |a|\r" {
+		t.Fatalf("got %q", got)
+	}
+}
