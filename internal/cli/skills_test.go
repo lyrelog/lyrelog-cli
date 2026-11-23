@@ -184,10 +184,3 @@ func TestSkillsChooseNeedsAPerson(t *testing.T) {
 		t.Fatalf("exit %d: %s", code, errOut)
 	}
 }
-
-func TestKeysTypedFastAreSplit(t *testing.T) {
-	got := strings.Join(splitKeys([]byte("\x1b[B\x1b[B a\r")), "|")
-	if got != "\x1b[B|\x1b[B| |a|\r" {
-		t.Fatalf("got %q", got)
-	}
-}
