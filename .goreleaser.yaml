@@ -76,9 +76,10 @@ homebrew_casks:
       name: homebrew-tap
       token: "{{ .Env.HOMEBREW_TAP_TOKEN }}"
     # The binaries aren't notarized yet: without this macOS refuses to run one downloaded by brew.
+    # Homebrew's declarative steps (postflight_steps; the Ruby postflight is deprecated).
     hooks:
       post:
-        install: |
-          if OS.mac?
-            system_command "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "#{staged_path}/lyrelog"]
+        install_steps: |
+          on_macos do
+            run "/usr/bin/xattr", args: ["-dr", "com.apple.quarantine", "{{ .StagedPath }}/lyrelog"]
           end
