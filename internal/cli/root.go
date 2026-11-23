@@ -58,7 +58,7 @@ Force either with --json or --human (given both, the last one wins).`,
 		a.releasesCommand(), a.insightsCommand(), a.usageCommand())
 	add("manage", a.projectsCommand(), a.useCommand(), a.keysCommand(), a.orgsCommand())
 	add("account", a.loginCommand(), a.logoutCommand(), a.whoamiCommand(), a.accountCommand(), a.tokensCommand(), a.openCommand(),
-		a.apiCommand(), a.versionCommand())
+		a.apiCommand(), a.skillsCommand(), a.versionCommand())
 	root.SetHelpCommandGroupID("account")
 	root.SetCompletionCommandGroupID("account")
 	return root

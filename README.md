@@ -142,6 +142,21 @@ lyrelog api PATCH projects/{project} --data '{"retention_days":30}'
 An agent can't sign in by itself: a person runs `lyrelog login` in a terminal on that computer,
 and the agent then uses that sign-in.
 
+### Skills for your agent
+
+[Lyrelog's agent skills](https://github.com/lyrelog/skills) teach Claude Code, Codex, Cursor,
+Gemini CLI, GitHub Copilot, OpenCode and others to add the SDK, investigate an error with this
+CLI, get the right key or token, and set up alerts:
+
+```bash
+lyrelog skills install            # the newest, for every agent on this computer
+lyrelog skills install --project  # into this project (.claude/skills and .agents/skills)
+lyrelog skills                    # what's installed where
+```
+
+Offline, it installs the copy that came with the CLI. They're on skills.sh too:
+`npx skills add lyrelog/skills`.
+
 In CI, set `LYRELOG_TOKEN` to an access token (`lyr_tok_...`), with an expiry of 30 days, 90, a
 year, or never. It wins over the saved sign-in and doesn't end when unused. Make one right after
 `lyrelog login` (it needs a sign-in from the last 10 minutes), or on your account page in the

@@ -5,7 +5,7 @@ DATE ?= $(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 LDFLAGS := -s -w -X go.lyrelog.com/cli/internal/cli.Version=$(VERSION) -X go.lyrelog.com/cli/internal/cli.Commit=$(COMMIT) -X go.lyrelog.com/cli/internal/cli.Date=$(DATE)
 PLATFORMS := darwin/arm64 darwin/amd64 linux/amd64 linux/arm64 windows/amd64
 
-.PHONY: help build install test vet check golden dist clean
+.PHONY: help build install test vet check golden dist clean skills
 
 help: ## This list
 	@grep -E '^[a-z-]+:.*## ' $(MAKEFILE_LIST) | awk -F':.*## ' '{printf "  %-10s %s\n", $$1, $$2}'
@@ -35,6 +35,10 @@ dist: ## Binaries for macOS, Linux and Windows, in dist/
 		echo "  dist/lyrelog-$$os-$$arch$$ext"; \
 		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go build -trimpath -ldflags "$(LDFLAGS)" -o dist/lyrelog-$$os-$$arch$$ext ./cmd/lyrelog || exit 1; \
 	done
+
+skills: ## Refresh the skills inside the binary from ../lyrelog-skills (the offline copy; install gets the newest from GitHub)
+	rm -rf internal/skills/files && mkdir -p internal/skills/files
+	cp -R ../lyrelog-skills/skills/. internal/skills/files/
 
 clean: ## Remove bin/ and dist/
 	rm -rf bin dist
