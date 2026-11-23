@@ -1,4 +1,17 @@
-# Lyrelog command line
+<p align="center">
+  <a href="https://lyrelog.com">
+    <picture>
+      <source media="(prefers-color-scheme: dark)" srcset="https://lyrelog.com/readme/cli-dark.png">
+      <img alt="Lyrelog command line" src="https://lyrelog.com/readme/cli-light.png" width="600">
+    </picture>
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://docs.lyrelog.com/cli"><b>Documentation</b></a> ·
+  <a href="https://docs.lyrelog.com/quickstart">Quickstart</a> ·
+  <a href="https://lyrelog.com">lyrelog.com</a>
+</p>
 
 [Lyrelog](https://lyrelog.com) from your terminal: search events, follow them live, read errors,
 sessions and people, manage projects, keys and organizations. Everything the dashboard does,
