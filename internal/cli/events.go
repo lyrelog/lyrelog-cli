@@ -41,6 +41,7 @@ func (a *App) eventsCommand() *cobra.Command {
 		cursor string
 		oldest bool
 		follow bool
+		view   string
 	)
 	cmd := &cobra.Command{
 		Use:     "events",
@@ -63,6 +64,7 @@ if its own time is within the last 2 days.`,
   lyrelog events --attr board.size:9 --attr result!:win
   lyrelog events --verified '!none'           # verified senders only
   lyrelog events -f --level error            # follow new errors
+  lyrelog events --view "Failed checkouts"   # a search saved in the dashboard
   lyrelog events --json | jq -r '.[].message'`,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -72,6 +74,9 @@ if its own time is within the last 2 days.`,
 			ctx := cmd.Context()
 			sp := a.spin("Loading events")
 			p, err := a.project(ctx, a.projectRef(nil))
+			if err == nil && view != "" {
+				err = a.applyView(ctx, p, view, &f)
+			}
 			sp.Stop()
 			if err != nil {
 				return err
@@ -116,6 +121,7 @@ if its own time is within the last 2 days.`,
 	fl.IntVarP(&limit, "limit", "n", 100, "how many events at most (pages of up to 1,000 are fetched as needed)")
 	fl.StringVar(&cursor, "cursor", "", "carry on from where a previous list stopped")
 	fl.BoolVar(&oldest, "oldest-first", false, "oldest first (from the start of the window)")
+	fl.StringVar(&view, "view", "", "a search saved in the explorer, by its name or id (lyrelog insights views); flags given win")
 	fl.BoolVarP(&follow, "follow", "f", false, "keep going: print new events as they arrive, late ones too (NDJSON in JSON mode); Ctrl-C stops")
 	cmd.AddCommand(a.eventGetCommand(), a.eventSummaryCommand(), a.eventValuesCommand(), a.eventAttributesCommand())
 	return cmd
@@ -569,4 +575,23 @@ func (a *App) eventAttributesCommand() *cobra.Command {
 	cmd.Flags().StringVar(&names, "of", "", `only in these events (messages), "a|b"`)
 	cmd.Flags().BoolVar(&numeric, "numeric", false, "only attributes with numbers (for insights' values)")
 	return cmd
+}
+
+// applyView finds a saved explorer search by id or name (case aside) and fills f from it.
+func (a *App) applyView(ctx context.Context, p api.Project, ref string, f *filters) error {
+	raw, err := a.getMap(ctx, projectPath(p, "views"), nil)
+	if err != nil {
+		return err
+	}
+	var found *api.SavedView
+	for _, v := range decodeInto[api.SavedView](raw["views"]) {
+		if v.Kind == "events" && (strconv.FormatInt(v.ID, 10) == ref || strings.EqualFold(v.Name, ref)) {
+			found = &v
+			break
+		}
+	}
+	if found == nil {
+		return failf(ExitNotFound, "No saved search %q in %s", ref, p.Name).hint("lyrelog insights views lists them; only explorer searches (kind events) apply here.")
+	}
+	return f.fromView(found.Config)
 }

@@ -1,5 +1,5 @@
 Tilefall · production · last 7 days
 
-   Event            Area      Count  Change  Players  Last seen  Versions      Trend
-●  purchase.failed  checkout    214    ↑78%       61  40s ago    2.4.1, 2.4.0  ▁▂▁▃▄▆█
-●  app.crashed      app          12     new        9  3h ago     2.4.1             ▂▅█
+   Event            Area      Count  Change  Players  Last seen  State  Versions      Trend
+●  purchase.failed  checkout    214    ↑78%       61  40s ago           2.4.1, 2.4.0  ▁▂▁▃▄▆█
+●  app.crashed      app          12     new        9  3h ago            2.4.1             ▂▅█

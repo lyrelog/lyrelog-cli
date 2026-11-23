@@ -105,18 +105,35 @@ type APIKey struct {
 }
 
 type Issue struct {
-	Issue     string   `json:"issue"`
-	Area      string   `json:"area"`
-	Name      string   `json:"name"`
-	Count     int64    `json:"count"`
-	Players   int64    `json:"players"`
-	Sessions  int64    `json:"sessions"`
-	Previous  int64    `json:"previous"`
-	FirstSeen int64    `json:"first_seen"`
-	LastSeen  int64    `json:"last_seen"`
-	Worst     string   `json:"worst"`
-	Versions  []string `json:"versions"`
-	Trend     []int64  `json:"trend"`
+	Issue     string      `json:"issue"`
+	Area      string      `json:"area"`
+	Name      string      `json:"name"`
+	Count     int64       `json:"count"`
+	Players   int64       `json:"players"`
+	Sessions  int64       `json:"sessions"`
+	Previous  int64       `json:"previous"`
+	FirstSeen int64       `json:"first_seen"`
+	LastSeen  int64       `json:"last_seen"`
+	Worst     string      `json:"worst"`
+	Versions  []string    `json:"versions"`
+	Trend     []int64     `json:"trend"`
+	State     IssueState  `json:"state"`
+	Links     []IssueLink `json:"links"`
+}
+
+// IssueState is an error's state: open, resolved (now, or in the version after one) or ignored.
+type IssueState struct {
+	Status            string `json:"status"`
+	ResolvedInVersion string `json:"resolved_in_version"`
+	RegressedAt       string `json:"regressed_at"`
+}
+
+// IssueLink is the issue opened for an error in GitHub or Linear.
+type IssueLink struct {
+	Kind   string `json:"kind"`
+	Key    string `json:"key"`
+	URL    string `json:"url"`
+	Closed bool   `json:"closed"`
 }
 
 type Session struct {
@@ -233,6 +250,8 @@ type SavedView struct {
 	Name      string          `json:"name"`
 	Kind      string          `json:"kind"`
 	Config    json.RawMessage `json:"config"`
+	Shared    bool            `json:"shared"` // everyone on the project sees it; otherwise only who saved it
+	Mine      bool            `json:"mine"`
 	CreatedBy string          `json:"created_by"`
 	CreatedAt time.Time       `json:"created_at"`
 }

@@ -1,6 +1,7 @@
 package cli
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/url"
 	"regexp"
@@ -269,3 +270,64 @@ func intFlag(cmd *cobra.Command, name string, v, low, high int) error {
 }
 
 var _ = fmt.Sprint
+
+// fromView fills, from a saved explorer search (lyrelog insights views, kind events), every filter
+// the command line didn't set: flags win. The search keeps the dashboard's URL state plus the
+// environment and platform of its top bar (env, platform_shown).
+func (f *filters) fromView(config json.RawMessage) error {
+	var v map[string]any
+	if err := json.Unmarshal(config, &v); err != nil {
+		return failf(ExitError, "That saved search can't be read")
+	}
+	text := func(key string) string {
+		switch x := v[key].(type) {
+		case string:
+			return x
+		case float64:
+			return strconv.FormatInt(int64(x), 10)
+		}
+		return ""
+	}
+	fill := func(target *string, value string) {
+		if *target == "" && value != "" {
+			*target = value
+		}
+	}
+	if f.since == "" && f.from == "" && f.to == "" {
+		if r := text("range"); r != "" {
+			f.since = r
+		} else {
+			f.from, f.to = text("from"), text("to")
+		}
+	}
+	fill(&f.level, text("level"))
+	fill(&f.category, text("category"))
+	fill(&f.message, text("message"))
+	fill(&f.query, text("q"))
+	fill(&f.user, text("user"))
+	fill(&f.session, text("session"))
+	fill(&f.version, text("version"))
+	fill(&f.os, text("os"))
+	fill(&f.device, text("device"))
+	fill(&f.locale, text("locale"))
+	fill(&f.country, text("country"))
+	fill(&f.verified, text("verified"))
+	fill(&f.platform, text("platform"))
+	fill(&f.platform, text("platform_shown"))
+	if _, ok := v["env"]; ok && f.env == "" {
+		f.env = text("env")
+		if f.env == "" {
+			f.env = "all" // saved with every environment shown
+		}
+	}
+	if len(f.attrs) == 0 {
+		if list, ok := v["attr"].([]any); ok {
+			for _, a := range list {
+				if s, ok := a.(string); ok {
+					f.attrs = append(f.attrs, s)
+				}
+			}
+		}
+	}
+	return nil
+}

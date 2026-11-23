@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
+	"net/http"
 	"net/url"
 	"os"
 	"strconv"
@@ -30,22 +31,35 @@ func (a *App) pageQuery(ctx context.Context, f *filters) (api.Project, url.Value
 func (a *App) errorsCommand() *cobra.Command {
 	var f filters
 	var warnings bool
+	var status string
 	cmd := &cobra.Command{
 		Use:     "errors",
 		Aliases: []string{"issues"},
 		Short:   "Problems grouped by area and event, worst first",
-		Long:    "What the Errors page shows: error and critical events grouped by area and event name, with how many people they reached and how they trend.",
+		Long: `What the Errors page shows: error and critical events grouped by area and event name, with how
+many people they reached and how they trend. Open ones by default, as the page; --status
+resolved, ignored or all for the others. Each has its id (the issue field in JSON) for
+"lyrelog errors set".`,
 		Example: `  lyrelog errors
   lyrelog errors --since 24h --warnings
+  lyrelog errors --status resolved
   lyrelog errors --version 2.4.1 --json`,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			if warnings && f.level == "" {
 				f.level = "warning+"
 			}
+			switch status {
+			case "open", "resolved", "ignored", "all":
+			default:
+				return usagef("--status %q: use open, resolved, ignored or all", status)
+			}
 			ctx := cmd.Context()
 			sp := a.spin("Grouping errors")
 			p, q, err := a.pageQuery(ctx, &f)
+			if err == nil && status != "all" {
+				q.Set("status", status)
+			}
 			var raw map[string]json.RawMessage
 			if err == nil {
 				raw, err = a.getMap(ctx, projectPath(p, "issues"), q)
@@ -70,6 +84,61 @@ func (a *App) errorsCommand() *cobra.Command {
 	}
 	f.register(cmd, "7d", "all")
 	cmd.Flags().BoolVar(&warnings, "warnings", false, "count warnings too")
+	cmd.Flags().StringVar(&status, "status", "open", "open, resolved, ignored or all")
+	cmd.AddCommand(a.errorSetCommand())
+	return cmd
+}
+
+// errorSetCommand resolves, ignores or reopens an error; its issue in GitHub or Linear follows.
+func (a *App) errorSetCommand() *cobra.Command {
+	var next bool
+	cmd := &cobra.Command{
+		Use:   "set <error id> <open|resolved|ignored>",
+		Short: "Resolve, ignore or reopen an error (its GitHub or Linear issue follows)",
+		Long: `Puts an error in a state, as its menu on the Errors page does. The id is the issue field of
+"lyrelog errors --json". --next-version resolves it in the version after the newest seen, so
+the app people already have doesn't reopen it; only a later version does.`,
+		Example: `  lyrelog errors set 10469278472936011905 resolved --next-version
+  lyrelog errors set 10469278472936011905 ignored
+  lyrelog errors set 10469278472936011905 open`,
+		Args: cobra.ExactArgs(2),
+		RunE: func(cmd *cobra.Command, args []string) error {
+			id, status := args[0], args[1]
+			if strings.TrimLeft(id, "0123456789") != "" || id == "" {
+				return usagef("%q isn't an error's id", id).hint("It's the issue field of lyrelog errors --json.")
+			}
+			switch status {
+			case "open", "resolved", "ignored":
+			default:
+				return usagef("the state is open, resolved or ignored, not %q", status)
+			}
+			if next && status != "resolved" {
+				return usagef("--next-version goes with resolved")
+			}
+			ctx := cmd.Context()
+			p, err := a.project(ctx, a.projectRef(nil))
+			if err != nil {
+				return err
+			}
+			var out map[string]json.RawMessage
+			if err := a.client.JSON(ctx, api.Request{Method: http.MethodPut, Path: projectPath(p, "issues/"+id+"/status"),
+				Body: map[string]any{"status": status, "in_next_version": next}}, &out); err != nil {
+				return err
+			}
+			if a.mode.JSON {
+				return a.printRaw(out["state"])
+			}
+			var st api.IssueState
+			_ = json.Unmarshal(out["state"], &st)
+			said := map[string]string{"open": "Open again", "resolved": "Resolved", "ignored": "Ignored"}[st.Status]
+			if st.ResolvedInVersion != "" {
+				said += " in the version after " + st.ResolvedInVersion
+			}
+			a.done(said)
+			return nil
+		},
+	}
+	cmd.Flags().BoolVar(&next, "next-version", false, "resolve it in the version after the newest seen")
 	return cmd
 }
 
@@ -77,7 +146,7 @@ func (a *App) renderIssues(p api.Project, issues []api.Issue) {
 	th, now := a.theme, a.Now()
 	_, many := personWords(p)
 	t := ui.Table{Columns: []ui.Column{{Header: ""}, {Header: "Event", Flex: true, Min: 16}, {Header: "Area", Flex: true}, {Header: "Count", Right: true},
-		{Header: "Change", Right: true, Drop: 2}, {Header: ui.Capitalize(many), Right: true}, {Header: "Last seen"}, {Header: "Versions", Flex: true, Drop: 1}, {Header: "Trend", Drop: 3}}}
+		{Header: "Change", Right: true, Drop: 2}, {Header: ui.Capitalize(many), Right: true}, {Header: "Last seen"}, {Header: "State", Drop: 2}, {Header: "Versions", Flex: true, Drop: 1}, {Header: "Trend", Drop: 3}}}
 	for _, it := range issues {
 		change := th.Dim("new")
 		if it.Previous > 0 {
@@ -92,8 +161,20 @@ func (a *App) renderIssues(p api.Project, issues []api.Issue) {
 			}
 		}
 		versions := strings.Join(it.Versions, ", ")
+		state := it.State.Status
+		switch {
+		case state == "resolved" && it.State.ResolvedInVersion != "":
+			state = "resolved after " + it.State.ResolvedInVersion
+		case state == "open" && it.State.RegressedAt != "":
+			state = th.Error("came back")
+		case state == "open" || state == "":
+			state = ""
+		}
+		for _, l := range it.Links {
+			state = strings.TrimSpace(state + " " + l.Key)
+		}
 		t.Add(th.LevelFill(it.Worst, "●"), th.Bold(it.Name), th.Dim(it.Area), ui.Number(it.Count), change,
-			ui.Number(it.Players), ui.AgoMillis(it.LastSeen, now), th.Dim(versions), th.Level(it.Worst, ui.Sparkline(it.Trend)))
+			ui.Number(it.Players), ui.AgoMillis(it.LastSeen, now), th.Dim(state), th.Dim(versions), th.Level(it.Worst, ui.Sparkline(it.Trend)))
 	}
 	t.Render(a.out, th, a.Width)
 }

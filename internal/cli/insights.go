@@ -160,7 +160,7 @@ how far people get through a flow (funnel). For flows that break, not marketing.
 
 	views := &cobra.Command{
 		Use:   "views",
-		Short: "The project's saved views",
+		Short: "The project's saved views and searches (shared, and yours)",
 		Args:  cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
@@ -182,9 +182,13 @@ how far people get through a flow (funnel). For flows that break, not marketing.
 				a.println("No saved views in " + p.Name + ".")
 				return nil
 			}
-			t := ui.Table{Columns: []ui.Column{{Header: "ID", Right: true}, {Header: "Name", Flex: true}, {Header: "Kind"}, {Header: "By"}, {Header: "Saved"}}}
+			t := ui.Table{Columns: []ui.Column{{Header: "ID", Right: true}, {Header: "Name", Flex: true}, {Header: "Kind"}, {Header: "Seen by"}, {Header: "By"}, {Header: "Saved"}}}
 			for _, v := range list {
-				t.Add(strconv.FormatInt(v.ID, 10), a.theme.Bold(v.Name), v.Kind, v.CreatedBy, ui.Ago(v.CreatedAt, a.Now()))
+				seen := "everyone"
+				if !v.Shared {
+					seen = "only you"
+				}
+				t.Add(strconv.FormatInt(v.ID, 10), a.theme.Bold(v.Name), v.Kind, seen, v.CreatedBy, ui.Ago(v.CreatedAt, a.Now()))
 			}
 			t.Render(a.out, a.theme, a.Width)
 			return nil
