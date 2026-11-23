@@ -97,7 +97,7 @@ func containsInt(list []int, n int) bool {
 }
 
 // chooseForm asks with huh (charm.land/huh): a list moved with the arrows, ticked with space
-// for several, in Lyrelog's cobalt, drawn on stderr. Esc or Ctrl-C give up.
+// for several, drawn on stderr in quiet colours (formTheme). Esc or Ctrl-C give up.
 func (a *App) chooseForm(ctx context.Context, f *os.File, title string, items []choice, multi bool) ([]int, error) {
 	label := func(it choice) string {
 		if it.hint == "" {
@@ -127,8 +127,15 @@ func (a *App) chooseForm(ctx context.Context, f *os.File, title string, items []
 		}
 		field = huh.NewSelect[int]().Title(title).Options(opts...).Value(&one)
 	}
+	// huh (bubbletea) needs the terminal itself, not a writer wrapped around it: through the
+	// colour profile's writer it can't size the screen and draws nothing.
+	out := a.Stderr
+	if file, ok := a.Stderr.(*os.File); !ok || !term.IsTerminal(int(file.Fd())) {
+		out = a.errOut
+	}
 	form := huh.NewForm(huh.NewGroup(field)).
-		WithInput(f).WithOutput(a.errOut).WithTheme(huh.ThemeFunc(a.formTheme)).WithShowHelp(true)
+		WithInput(f).WithOutput(out).WithTheme(huh.ThemeFunc(a.formTheme)).WithShowHelp(true)
+	fmt.Fprintln(out)
 	if err := form.RunWithContext(ctx); err != nil {
 		if errors.Is(err, huh.ErrUserAborted) {
 			return nil, failf(ExitInterrupted, "Nothing was installed")
@@ -148,17 +155,32 @@ func (a *App) chooseForm(ctx context.Context, f *os.File, title string, items []
 	return picked, nil
 }
 
-// formTheme is huh's plain theme with Lyrelog's cobalt for what's focused and ticked.
+// formTheme is huh's plain theme made quieter: no bar on the left, the question in bold, the
+// pointer in the text's own colour (bold), what's ticked in the green of the CLI's ✓, what isn't
+// in grey. Green is the only colour in the list.
 func (a *App) formTheme(isDark bool) *huh.Styles {
 	st := huh.ThemeBase(isDark)
-	cobalt := lipgloss.Color("#2b59ff")
+	green, grey := lipgloss.Color("#0c7c5e"), lipgloss.Color("#6b7280")
 	if isDark {
-		cobalt = lipgloss.Color("#6d8bff")
+		green, grey = lipgloss.Color("#3fcf9f"), lipgloss.Color("#8b93a3")
 	}
-	st.Focused.Title = st.Focused.Title.Foreground(cobalt).Bold(true)
-	st.Focused.SelectSelector = st.Focused.SelectSelector.Foreground(cobalt)
-	st.Focused.MultiSelectSelector = st.Focused.MultiSelectSelector.Foreground(cobalt)
-	st.Focused.SelectedPrefix = st.Focused.SelectedPrefix.Foreground(cobalt)
-	st.Focused.SelectedOption = st.Focused.SelectedOption.Foreground(cobalt)
+	for _, fs := range []*huh.FieldStyles{&st.Focused, &st.Blurred} {
+		fs.Base = lipgloss.NewStyle()
+		fs.Title = lipgloss.NewStyle().Bold(true)
+		fs.Description = lipgloss.NewStyle().Foreground(grey)
+		fs.Option = lipgloss.NewStyle()
+		fs.SelectedOption = lipgloss.NewStyle()
+		fs.UnselectedOption = lipgloss.NewStyle().Foreground(grey)
+		fs.SelectedPrefix = lipgloss.NewStyle().Foreground(green).SetString("◉ ")
+		fs.UnselectedPrefix = lipgloss.NewStyle().Foreground(grey).SetString("○ ")
+		fs.ErrorIndicator = fs.ErrorIndicator.SetString("")
+	}
+	st.Focused.SelectSelector = lipgloss.NewStyle().Bold(true).SetString("› ")
+	st.Focused.MultiSelectSelector = lipgloss.NewStyle().Bold(true).SetString("› ")
+	st.Blurred.SelectSelector = lipgloss.NewStyle().SetString("  ")
+	st.Blurred.MultiSelectSelector = lipgloss.NewStyle().SetString("  ")
+	st.Help.ShortKey = lipgloss.NewStyle().Foreground(grey)
+	st.Help.ShortDesc = lipgloss.NewStyle().Foreground(grey)
+	st.Help.ShortSeparator = lipgloss.NewStyle().Foreground(grey)
 	return st
 }

@@ -462,6 +462,7 @@ func (a *App) applySkillsChoice(cmd *cobra.Command, f *skillTargetFlags, choose,
 		if err := a.cfg.Save(a.cfgPath); err == nil {
 			fmt.Fprintln(a.errOut, a.theme.Dim("Saved for next time; lyrelog skills install --choose changes it."))
 		}
+		fmt.Fprintln(a.errOut)
 	}
 	return nil
 }
