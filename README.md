@@ -13,7 +13,7 @@
   <a href="https://lyrelog.com">lyrelog.com</a>
 </p>
 
-[Lyrelog](https://lyrelog.com) from your terminal: search events, follow them live, read errors,
+[Lyrelog](https://lyrelog.com/cli) from your terminal: search events, follow them live, read errors,
 sessions and people, manage projects, keys and organizations. Everything the dashboard does,
 except deleting your account or a project and changing how you sign in (those stay on the web).
 
