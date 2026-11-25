@@ -1,0 +1,207 @@
+# llvm-symbolizer --inlining --demangle (NDK 28.2) on native.so, every instruction: address, then
+# function (file:line), innermost first
+0x4718
+__on_dlclose (crtbegin_so.c:0)
+0x471c
+__on_dlclose (crtbegin_so.c:0)
+0x4720
+__on_dlclose (crtbegin_so.c:0)
+0x4724
+__on_dlclose (crtbegin_so.c:0)
+0x4728
+__emutls_unregister_key (crtbegin_so.c:0)
+0x472c
+__emutls_unregister_key (crtbegin_so.c:0)
+0x4730
+__on_dlclose_late (crtbegin_so.c:0)
+0x4734
+__on_dlclose_late (crtbegin_so.c:0)
+0x4738
+__atexit_handler_wrapper (crtbegin_so.c:0)
+0x473c
+__atexit_handler_wrapper (crtbegin_so.c:0)
+0x4740
+__atexit_handler_wrapper (crtbegin_so.c:0)
+0x4744
+__atexit_handler_wrapper (crtbegin_so.c:0)
+0x4748
+__atexit_handler_wrapper (crtbegin_so.c:0)
+0x474c
+atexit (crtbegin_so.c:0)
+0x4750
+atexit (crtbegin_so.c:0)
+0x4754
+atexit (crtbegin_so.c:0)
+0x4758
+atexit (crtbegin_so.c:0)
+0x475c
+atexit (crtbegin_so.c:0)
+0x4760
+atexit (crtbegin_so.c:0)
+0x4764
+atexit (crtbegin_so.c:0)
+0x4768
+pthread_atfork (crtbegin_so.c:0)
+0x476c
+pthread_atfork (crtbegin_so.c:0)
+0x4770
+pthread_atfork (crtbegin_so.c:0)
+0x4774
+pthread_atfork (crtbegin_so.c:0)
+0x4778
+tilefall_step (native.cpp:43)
+0x477c
+tilefall_step (native.cpp:43)
+0x4780
+tilefall_step (native.cpp:43)
+0x4784
+tilefall::Board::Board(tilefall::Cell*) (native.cpp:20)
+tilefall_step (native.cpp:44)
+0x4788
+tilefall_step (native.cpp:45)
+0x478c
+tilefall_step (native.cpp:45)
+0x4790
+tilefall_step (native.cpp:45)
+0x4794
+tilefall_step (native.cpp:45)
+0x4798
+tilefall_step (native.cpp:45)
+0x479c
+tilefall_crash (native.cpp:48)
+0x47a0
+tilefall_crash (native.cpp:48)
+0x47a4
+tilefall_crash (native.cpp:48)
+0x47a8
+tilefall::Board::Board(tilefall::Cell*) (native.cpp:20)
+tilefall_step (native.cpp:44)
+tilefall_crash (native.cpp:49)
+0x47ac
+tilefall_step (native.cpp:45)
+tilefall_crash (native.cpp:49)
+0x47b0
+tilefall_step (native.cpp:45)
+tilefall_crash (native.cpp:49)
+0x47b4
+tilefall_step (native.cpp:45)
+tilefall_crash (native.cpp:49)
+0x47b8
+tilefall_crash (native.cpp:49)
+0x47bc
+tilefall_crash (native.cpp:49)
+0x47c0
+tilefall_crash (native.cpp:49)
+0x47c4
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:32)
+0x47c8
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:32)
+0x47cc
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:32)
+0x47d0
+tilefall::Board::deref(tilefall::Cell const*) (native.cpp:30)
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47d4
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47d8
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:0)
+0x47dc
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47e0
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47e4
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47e8
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47ec
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47f0
+tilefall::Board::step(tilefall::Cell const*) const (native.cpp:34)
+0x47f4
+tilefall::Board::sum(int) const (native.cpp:24)
+0x47f8
+tilefall::Board::sum(int) const (native.cpp:24)
+0x47fc
+tilefall::Board::sum(int) const (native.cpp:0)
+0x4800
+tilefall::Board::sum(int) const (native.cpp:25)
+0x4804
+tilefall::Board::sum(int) const (native.cpp:24)
+0x4808
+int tilefall::clampTo<int>(int, int, int) (native.cpp:15)
+tilefall::Board::sum(int) const (native.cpp:25)
+0x480c
+int tilefall::clampTo<int>(int, int, int) (native.cpp:15)
+tilefall::Board::sum(int) const (native.cpp:25)
+0x4810
+int tilefall::clampTo<int>(int, int, int) (native.cpp:15)
+tilefall::Board::sum(int) const (native.cpp:25)
+0x4814
+int tilefall::clampTo<int>(int, int, int) (native.cpp:15)
+tilefall::Board::sum(int) const (native.cpp:25)
+0x4818
+tilefall::Board::sum(int) const (native.cpp:25)
+0x481c
+tilefall::Board::sum(int) const (native.cpp:24)
+0x4820
+tilefall::Board::sum(int) const (native.cpp:27)
+0x4824
+tilefall::Board::sum(int) const (native.cpp:0)
+0x4828
+tilefall::Board::sum(int) const (native.cpp:27)
+0x4830
+ (:0)
+0x4834
+ (:0)
+0x4838
+ (:0)
+0x483c
+ (:0)
+0x4840
+ (:0)
+0x4844
+ (:0)
+0x4848
+ (:0)
+0x484c
+ (:0)
+0x4850
+ (:0)
+0x4854
+ (:0)
+0x4858
+ (:0)
+0x485c
+ (:0)
+0x4860
+ (:0)
+0x4864
+ (:0)
+0x4868
+ (:0)
+0x486c
+ (:0)
+0x4870
+ (:0)
+0x4874
+ (:0)
+0x4878
+ (:0)
+0x487c
+ (:0)
+0x4880
+ (:0)
+0x4884
+ (:0)
+0x4888
+ (:0)
+0x488c
+ (:0)
+0x4890
+ (:0)
+0x4894
+ (:0)
+0x4898
+ (:0)
+0x489c
+ (:0)

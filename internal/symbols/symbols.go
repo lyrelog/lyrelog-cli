@@ -125,7 +125,6 @@ func extract(f *macho.File, binaryName string) (*Map, error) {
 		return nil, fmt.Errorf("%s (%s): %w", binaryName, m.Arch, ErrNoDebugInfo)
 	}
 	b := &builder{m: m, strings: map[string]uint64{"": 0}}
-	names := &nameCache{d: d, byOffset: map[dwarf.Offset]string{}}
 	in := func(pc uint64) (uint64, bool) {
 		if pc < text.Addr || pc >= text.Addr+text.Memsz {
 			return 0, false
@@ -133,6 +132,20 @@ func extract(f *macho.File, binaryName string) (*Map, error) {
 		return pc - text.Addr, true
 	}
 
+	if err := b.walk(d, in, binaryName); err != nil {
+		return nil, err
+	}
+	sort.Slice(m.Functions, func(i, j int) bool { return m.Functions[i][0] < m.Functions[j][0] })
+	b.symbolTable(f, text.Addr)
+	return b.finish(binaryName)
+}
+
+// walk reads a binary's DWARF into the map: functions with their ranges, inlined calls with
+// their call sites, and the line table, every address passed through in (an offset into the
+// binary's code, or false when it isn't code of this binary).
+func (b *builder) walk(d *dwarf.Data, in func(uint64) (uint64, bool), binaryName string) error {
+	m := b.m
+	names := &nameCache{d: d, byOffset: map[dwarf.Offset]string{}}
 	r := d.Reader()
 	var files []*dwarf.LineFile
 	// The open entries above the current one: whether each is a function with code, and how deep
@@ -151,7 +164,7 @@ func extract(f *macho.File, binaryName string) (*Map, error) {
 	for {
 		e, err := r.Next()
 		if err != nil {
-			return nil, fmt.Errorf("%s: reading DWARF: %w", binaryName, err)
+			return fmt.Errorf("%s: reading DWARF: %w", binaryName, err)
 		}
 		if e == nil {
 			break
@@ -206,8 +219,13 @@ func extract(f *macho.File, binaryName string) (*Map, error) {
 			stack = append(stack, state)
 		}
 	}
+	return nil
+}
+
+// finish sorts the tables and drops repeated line rows; an empty map is no debug information.
+func (b *builder) finish(binaryName string) (*Map, error) {
+	m := b.m
 	sort.Slice(m.Functions, func(i, j int) bool { return m.Functions[i][0] < m.Functions[j][0] })
-	b.symbolTable(f, text.Addr)
 	if len(m.Functions) == 0 {
 		return nil, fmt.Errorf("%s (%s): %w", binaryName, m.Arch, ErrNoDebugInfo)
 	}

@@ -73,9 +73,12 @@ func (a *App) symbolsCommand() *cobra.Command {
   folders, lines), with Swift names demangled by Xcode's tools.
 - Android: a release's R8 mapping (mapping.txt) turns renamed classes and methods back. Each
   frame names its mapping (r8-map-id-...), so uploading it once per build is all.
+- Android native code (C, C++: the NDK, a game engine): each library's debug information turns
+  its crashes' addresses into functions, files and lines, by the library's build id. Gradle
+  keeps the unstripped libraries under build/; point at app/build and both are found.
 Upload each build's once, from Xcode, Gradle or CI; crashes of builds without them stay as sent.`,
 		Example: `  lyrelog symbols upload ~/Library/Developer/Xcode/Archives/2026-11-25/Tilefall.xcarchive
-  lyrelog symbols upload app/build/outputs/mapping/release/mapping.txt
+  lyrelog symbols upload app/build       # an Android app: its R8 mapping and native libraries
   lyrelog symbols upload "$DWARF_DSYM_FOLDER_PATH"
   lyrelog symbols
   lyrelog symbols delete A3F11B8C-0F44-3ABF-A3AA-25AC3AF39B8F`,
@@ -85,22 +88,24 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 	cmd.AddCommand(&cobra.Command{Use: "list", Short: "List the project's uploaded symbols", Args: cobra.NoArgs, RunE: list})
 
 	upload := &cobra.Command{
-		Use:   "upload <dSYM, .xcarchive, mapping.txt or folder>...",
-		Short: "Upload the dSYMs and R8 mappings found at each path (only builds the project doesn't have yet)",
+		Use:   "upload <dSYM, .xcarchive, mapping.txt, .so or folder>...",
+		Short: "Upload the dSYMs, R8 mappings and native libraries' symbols found at each path (only builds the project doesn't have yet)",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
 			var files, mappings []string
+			var natives []nativeLib
 			for _, path := range args {
-				found, maps, err := symbolFiles(path)
+				found, maps, libs, err := symbolFiles(path)
 				if err != nil {
 					return err
 				}
 				files = append(files, found...)
 				mappings = append(mappings, maps...)
+				natives = append(natives, libs...)
 			}
-			if len(files) == 0 && len(mappings) == 0 {
-				return usagef("No dSYM or R8 mapping found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), or an Android release's mapping.txt (app/build/outputs/mapping/release/).")
+			if len(files) == 0 && len(mappings) == 0 && len(natives) == 0 {
+				return usagef("No dSYM, R8 mapping or native library found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), or an Android app's build folder (app/build: its R8 mapping and native libraries).")
 			}
 			// What to upload: each binary's symbol map, each mapping as it is.
 			type upload struct {
@@ -108,8 +113,8 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 				data             func() ([]byte, error)
 			}
 			var uploads []upload
-			if len(files) > 0 {
-				sp := a.spin("Reading the dSYMs")
+			if len(files) > 0 || len(natives) > 0 {
+				sp := a.spin("Reading the debug symbols")
 				var maps []*symbols.Map
 				for _, f := range files {
 					m, err := symbols.Extract(f)
@@ -119,10 +124,19 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 					}
 					maps = append(maps, m...)
 				}
+				native, stripped, err := richestNative(natives)
+				if err != nil {
+					sp.Stop()
+					return err
+				}
+				maps = append(maps, native...)
 				demangled := symbols.Demangle(ctx, maps)
 				sp.Stop()
 				if demangled != nil && !a.mode.JSON {
-					a.println(a.theme.Dim("Swift names stay mangled (" + demangled.Error() + "): run this on a Mac with Xcode for readable ones."))
+					a.println(a.theme.Dim("Names stay mangled (" + demangled.Error() + "): run this where Xcode's tools or c++filt are installed for readable ones."))
+				}
+				if len(stripped) > 0 && !a.mode.JSON {
+					a.println(a.theme.Dim("Only stripped copies of " + strings.Join(stripped, ", ") + " (nothing to upload): point at the build folder, where Gradle keeps them unstripped."))
 				}
 				for _, m := range maps {
 					uploads = append(uploads, upload{id: m.UUID, binary: m.Binary, arch: m.Arch, data: func() ([]byte, error) { return gzipJSON(m) }})
@@ -229,24 +243,31 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 }
 
 // symbolFiles finds what to upload at path: DWARF files (a .dSYM's Contents/Resources/DWARF/*,
-// every .dSYM in a folder or an .xcarchive, or a Mach-O file given directly) and R8 mappings
-// (a mapping.txt, or each build/outputs/mapping/*/mapping.txt in a folder).
-func symbolFiles(path string) (dwarf, mappings []string, err error) {
+// every .dSYM in a folder or an .xcarchive, or a Mach-O file given directly), R8 mappings (a
+// mapping.txt, or each build/outputs/mapping/*/mapping.txt in a folder) and Android native
+// libraries (.so files, given or in a folder, and native-debug-symbols.zip).
+func symbolFiles(path string) (dwarf, mappings []string, natives []nativeLib, err error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, nil, err
+		return nil, nil, nil, err
 	}
 	if !info.IsDir() {
-		if isR8Mapping(path) {
-			return nil, []string{path}, nil
+		switch {
+		case isR8Mapping(path):
+			return nil, []string{path}, nil, nil
+		case strings.HasSuffix(path, ".zip"):
+			libs, err := nativeInZip(path)
+			return nil, nil, libs, err
+		case symbols.IsELF(path):
+			return nil, nil, []nativeLib{nativeOnDisk(path)}, nil
 		}
-		return []string{path}, nil, nil
+		return []string{path}, nil, nil, nil
 	}
 	err = filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}
-		if d.IsDir() && (d.Name() == ".git" || d.Name() == "node_modules" || d.Name() == ".gradle") {
+		if d.IsDir() && (d.Name() == ".git" || d.Name() == "node_modules" || d.Name() == ".gradle" || d.Name() == ".cxx") {
 			return filepath.SkipDir
 		}
 		if d.IsDir() && strings.HasSuffix(d.Name(), ".dSYM") {
@@ -260,12 +281,24 @@ func symbolFiles(path string) (dwarf, mappings []string, err error) {
 			}
 			return filepath.SkipDir
 		}
-		if !d.IsDir() && d.Name() == "mapping.txt" && strings.Contains(filepath.ToSlash(p), "/outputs/mapping/") && isR8Mapping(p) {
+		if d.IsDir() {
+			return nil
+		}
+		switch {
+		case d.Name() == "mapping.txt" && strings.Contains(filepath.ToSlash(p), "/outputs/mapping/") && isR8Mapping(p):
 			mappings = append(mappings, p)
+		case d.Name() == "native-debug-symbols.zip":
+			libs, err := nativeInZip(p)
+			if err != nil {
+				return err
+			}
+			natives = append(natives, libs...)
+		case isNativeLibName(d.Name()) && d.Type().IsRegular() && symbols.IsELF(p):
+			natives = append(natives, nativeOnDisk(p))
 		}
 		return nil
 	})
-	return dwarf, mappings, err
+	return dwarf, mappings, natives, err
 }
 
 // isR8Mapping: a text file that starts as R8 writes its mappings.

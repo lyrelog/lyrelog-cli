@@ -67,9 +67,13 @@ func isSwift(s string) bool {
 	return false
 }
 
-// pipe runs xcrun with one name a line and reads one a line back.
+// pipe runs the tool through xcrun (or as it is, where there's no Xcode: c++filt on Linux, for
+// Android libraries built on CI) with one name a line, and reads one a line back.
 func pipe(ctx context.Context, args, names []string) ([]string, error) {
 	cmd := exec.CommandContext(ctx, "xcrun", args...)
+	if _, err := exec.LookPath("xcrun"); err != nil {
+		cmd = exec.CommandContext(ctx, args[0], args[1:]...)
+	}
 	cmd.Stdin = strings.NewReader(strings.Join(names, "\n") + "\n")
 	var out bytes.Buffer
 	cmd.Stdout = &out

@@ -125,19 +125,21 @@ lyrelog person u_8f2a --export u_8f2a.ndjson           # an access request
 lyrelog person u_8f2a --delete                         # an erasure request (owners)
 ```
 
-Readable crashes: upload each build's dSYMs (iOS, Mac) or R8 mapping (Android) once (only builds the project doesn't
+Readable crashes: upload each build's dSYMs (iOS, Mac), or R8 mapping and native libraries (Android), once (only builds the project doesn't
 have are sent). The CLI reads them here and uploads a map of function and file names and lines,
 Swift names demangled with Xcode's tools:
 
 ```bash
 lyrelog symbols upload path/to/Tilefall.xcarchive        # or a .dSYM, or a folder of them
-lyrelog symbols upload app/build/outputs/mapping/release/mapping.txt   # an Android release's R8 mapping
+lyrelog symbols upload app/build                         # an Android app: its R8 mapping and native libraries
 lyrelog symbols                                          # what's uploaded
 ```
 
 Android releases shrunk by R8 name their mapping in every frame (`r8-map-id-…`, Android Gradle
 Plugin 8+), so uploading each release's `mapping.txt` once is all: its crashes read as your
-source again.
+source again. Native libraries (C, C++) are matched by their build id: the command finds the
+unstripped copies Gradle keeps under `build/intermediates` (or `native-debug-symbols.zip`) and
+uploads each library once.
 
 In Xcode, a Run Script phase can do it on every archive, with an access token in
 `LYRELOG_TOKEN` (`lyrelog tokens create`). Add

@@ -46,7 +46,7 @@ func TestSymbolsUploadSendsTheMapOfEachMissingBuild(t *testing.T) {
 func TestSymbolsUploadWithoutADSYMSaysWhereToPoint(t *testing.T) {
 	f := newFake(t)
 	_, errOut, code := f.run(t, runOpts{}, "symbols", "upload", t.TempDir(), "--json")
-	if code == 0 || !strings.Contains(errOut, "No dSYM or R8 mapping found") {
+	if code == 0 || !strings.Contains(errOut, "No dSYM, R8 mapping or native library found") {
 		t.Fatalf("exit %d: %s", code, errOut)
 	}
 }
@@ -94,3 +94,45 @@ func TestSymbolsUploadSendsAnR8Mapping(t *testing.T) {
 	}
 }
 
+// An Android build folder holds each native library more than once (Gradle's unstripped copy
+// under intermediates, the stripped one it packs): the library is uploaded once, from the copy
+// with its debug information, under its build id.
+func TestSymbolsUploadSendsANativeLibraryFromItsRichestCopy(t *testing.T) {
+	f := newFake(t)
+	dir := t.TempDir()
+	copyTo := func(from, to string) {
+		data, err := os.ReadFile(from)
+		if err != nil {
+			t.Fatal(err)
+		}
+		must(t, os.MkdirAll(filepath.Dir(to), 0o755))
+		must(t, os.WriteFile(to, data, 0o644))
+	}
+	copyTo("../symbols/testdata/native.stripped.so", filepath.Join(dir, "intermediates", "stripped_native_libs", "release", "out", "lib", "arm64-v8a", "libtilefall.so"))
+	copyTo("../symbols/testdata/native.so", filepath.Join(dir, "intermediates", "merged_native_libs", "release", "out", "lib", "arm64-v8a", "libtilefall.so"))
+	out, errOut, code := f.run(t, runOpts{}, "symbols", "upload", dir, "--json")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if !strings.Contains(out, `"uuid":"0ebb2808997eeafc84f0fcfb81b4cee0c2b53f68"`) || !strings.Contains(out, `"binary":"libtilefall.so"`) || len(f.uploads) != 1 {
+		t.Fatalf("uploads %d, output: %s", len(f.uploads), out)
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(f.uploads[0].body))
+	must(t, err)
+	var m struct {
+		Functions [][3]uint64 `json:"functions"`
+		Lines     [][3]uint64 `json:"lines"`
+	}
+	must(t, json.NewDecoder(zr).Decode(&m))
+	if len(m.Lines) == 0 {
+		t.Fatal("uploaded from the stripped copy: no lines")
+	}
+}
+
+
+func must(t *testing.T, err error) {
+	t.Helper()
+	if err != nil {
+		t.Fatal(err)
+	}
+}
