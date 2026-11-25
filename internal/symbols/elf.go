@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -206,7 +205,7 @@ func Richness(r io.ReaderAt) (id string, richness int) {
 // DartFile names a Dart source as Dart does when it's the SDK's or a package's, and by its base
 // name otherwise (the app's own, without the build machine's folders).
 func DartFile(path string) string {
-	p := filepath.ToSlash(path)
+	p := strings.ReplaceAll(path, `\`, "/") // a build on Windows
 	cut := func(marker string) (string, bool) {
 		if i := strings.Index(p, marker); i >= 0 {
 			return p[i+len(marker):], true
@@ -228,12 +227,16 @@ func DartFile(path string) string {
 	if rest, ok := strings.CutPrefix(p, "lib/ui/"); ok {
 		return "dart:ui/" + rest // the engine's, relative to its source tree
 	}
-	if rest, ok := cut("/.pub-cache/hosted/"); ok {
+	rest, ok := cut("/.pub-cache/hosted/")
+	if !ok {
+		rest, ok = cut("/Pub/Cache/hosted/") // Windows's pub cache
+	}
+	if ok {
 		// <host>/<package>-<version>/lib/<file>
 		parts := strings.SplitN(rest, "/", 4)
 		if len(parts) == 4 && parts[2] == "lib" {
 			pkg := parts[1]
-			if i := strings.LastIndex(pkg, "-"); i > 0 {
+			if i := strings.Index(pkg, "-"); i > 0 { // a package's name has no "-"; its version may
 				pkg = pkg[:i]
 			}
 			return "package:" + pkg + "/" + parts[3]
@@ -247,5 +250,15 @@ func DartFile(path string) string {
 			return "package:" + pkg + "/" + rest
 		}
 	}
-	return filepath.Base(path)
+	return BaseName(path)
+}
+
+// BaseName is a path's last part, whichever machine wrote it: a Windows build's DWARF names its
+// files with backslashes, which filepath.Base doesn't split on elsewhere.
+func BaseName(path string) string {
+	p := strings.ReplaceAll(path, `\`, "/")
+	if i := strings.LastIndexByte(p, '/'); i >= 0 {
+		return p[i+1:]
+	}
+	return p
 }

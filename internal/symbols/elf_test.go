@@ -104,9 +104,12 @@ func TestDartFilesAreNamedAsDartNamesThem(t *testing.T) {
 		"third_party/dart/sdk/lib/async/future.dart":                "dart:async/future.dart",
 		"third_party/dart/sdk/lib/_internal/vm/lib/timer_impl.dart": "dart:_internal/timer_impl.dart",
 		"lib/ui/hooks.dart": "dart:ui/hooks.dart",
-		"/opt/flutter/packages/flutter/lib/src/widgets/framework.dart":           "package:flutter/src/widgets/framework.dart",
-		"/home/someone/.pub-cache/hosted/pub.dev/lyrelog-1.0.3/lib/lyrelog.dart": "package:lyrelog/lyrelog.dart",
-		"/home/someone/tilefall/lib/board.dart":                                  "board.dart",
+		"/opt/flutter/packages/flutter/lib/src/widgets/framework.dart":                              "package:flutter/src/widgets/framework.dart",
+		"/home/someone/.pub-cache/hosted/pub.dev/lyrelog-1.0.3/lib/lyrelog.dart":                    "package:lyrelog/lyrelog.dart",
+		"/home/someone/tilefall/lib/board.dart":                                                     "board.dart",
+		"/home/someone/.pub-cache/hosted/pub.dev/lyrelog-1.0.0-beta.1/lib/lyrelog.dart":             "package:lyrelog/lyrelog.dart",
+		`C:\Users\someone\AppData\Local\Pub\Cache\hosted\pub.dev\lyrelog-1.0.4\lib\src\errors.dart`: "package:lyrelog/src/errors.dart",
+		`C:\Users\someone\tilefall\lib\board.dart`:                                                  "board.dart",
 	} {
 		if got := DartFile(in); got != want {
 			t.Errorf("%s: %s, want %s", in, got, want)

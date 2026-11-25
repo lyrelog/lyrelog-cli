@@ -114,7 +114,7 @@ func (b *builder) file(path string) string {
 	if b.fileName != nil {
 		return b.fileName(path)
 	}
-	return filepath.Base(path)
+	return BaseName(path)
 }
 
 func (b *builder) str(s string) uint64 {

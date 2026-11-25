@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"compress/gzip"
 	"encoding/json"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -159,5 +160,72 @@ func TestADartObfuscationMapIsFoundBesideItsSymbols(t *testing.T) {
 	}
 	if dartBinary("app.android-arm64.symbols") != "libapp.so" || dartBinary("app.ios-arm64.symbols") != "App" {
 		t.Fatal("dartBinary")
+	}
+}
+
+// The command the docs give for a Flutter release, the symbols' folder and the obfuscation map
+// beside it as two arguments, uploads the Dart symbols with the map in them.
+func TestSymbolsUploadTakesAFlutterBuildsFolderAndObfuscationMap(t *testing.T) {
+	f := newFake(t)
+	dir := t.TempDir()
+	data, err := os.ReadFile("../symbols/testdata/native.so")
+	must(t, err)
+	must(t, os.MkdirAll(filepath.Join(dir, "debug-info"), 0o755))
+	must(t, os.WriteFile(filepath.Join(dir, "debug-info", "app.android-arm64.symbols"), data, 0o644))
+	obf := filepath.Join(dir, "obfuscation.map.json")
+	must(t, os.WriteFile(obf, []byte(`["LanternApp","oW","_ShelfPageState","_qW"]`), 0o644))
+	out, errOut, code := f.run(t, runOpts{}, "symbols", "upload", filepath.Join(dir, "debug-info"), obf, "--json")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if !strings.Contains(out, `"binary":"libapp.so"`) || len(f.uploads) != 1 {
+		t.Fatalf("uploads %d, output: %s", len(f.uploads), out)
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(f.uploads[0].body))
+	must(t, err)
+	var m struct {
+		Dart []string `json:"dart_obfuscation"`
+	}
+	must(t, json.NewDecoder(zr).Decode(&m))
+	if len(m.Dart) != 4 || m.Dart[3] != "_qW" {
+		t.Fatalf("obfuscation map: %v", m.Dart)
+	}
+}
+
+// An archive with one dSYM that can't be read (a framework's empty one) still uploads the rest,
+// and says which it passed over.
+func TestOneUnreadableDSYMDoesntStopTheRest(t *testing.T) {
+	f := newFake(t)
+	dir := t.TempDir()
+	junk := filepath.Join(dir, "Empty.framework.dSYM", "Contents", "Resources", "DWARF")
+	must(t, os.MkdirAll(junk, 0o755))
+	must(t, os.WriteFile(filepath.Join(junk, "Empty"), []byte("not a Mach-O"), 0o644))
+	data, err := os.ReadFile("../symbols/testdata/native.so")
+	must(t, err)
+	must(t, os.WriteFile(filepath.Join(dir, "libtilefall.so"), data, 0o644))
+	out, errOut, code := f.run(t, runOpts{}, "symbols", "upload", dir, "--human")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if len(f.uploads) != 1 || !strings.Contains(out+errOut, "Empty") {
+		t.Fatalf("uploads %d, output: %s %s", len(f.uploads), out, errOut)
+	}
+}
+
+// More builds than the server answers about at once (500) are asked about in turns.
+func TestManyBuildsAreAskedAboutInTurns(t *testing.T) {
+	f := newFake(t)
+	dir := t.TempDir()
+	for i := 0; i < 501; i++ {
+		d := filepath.Join(dir, "outputs", "mapping", fmt.Sprintf("v%d", i))
+		must(t, os.MkdirAll(d, 0o755))
+		must(t, os.WriteFile(filepath.Join(d, "mapping.txt"), []byte(fmt.Sprintf("# compiler: R8\n# pg_map_id: %064x\ncom.example.A -> a:\n", i+1)), 0o644))
+	}
+	_, errOut, code := f.run(t, runOpts{}, "symbols", "upload", dir, "--json")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if len(f.uploads) != 501 {
+		t.Fatalf("uploads %d", len(f.uploads))
 	}
 }

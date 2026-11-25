@@ -47,7 +47,7 @@ func (a *App) symbolsCommand() *cobra.Command {
 		}
 		files := decodeInto[symbolFile](raw["symbols"])
 		if len(files) == 0 {
-			a.println("No symbols uploaded to " + p.Name + " yet: its iOS and Mac crashes show as offsets.")
+			a.println("No symbols or source maps uploaded to " + p.Name + " yet: its release crashes show as sent.")
 			a.tip("Upload a build's:", "lyrelog symbols upload path/to/App.xcarchive")
 			return nil
 		}
@@ -66,7 +66,7 @@ func (a *App) symbolsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "symbols",
 		Aliases: []string{"dsym", "dsyms"},
-		Short:   "Debug symbols that make crashes readable (iOS dSYMs, Android R8 mappings): upload, list, delete",
+		Short:   "Debug symbols that make crashes readable (dSYMs, R8 mappings, native libraries, Flutter's Dart symbols): upload, list, delete",
 		Long: `Debug symbols turn a crash into the functions, files and lines it happened in:
 - iOS and Mac: a dSYM turns offsets (Tilefall +0x1a2b3c) into functions, inlined ones included.
   The CLI reads it here and uploads a compact map (function and file names without their
@@ -93,7 +93,7 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 	cmd.AddCommand(&cobra.Command{Use: "list", Short: "List the project's uploaded symbols", Args: cobra.NoArgs, RunE: list})
 
 	upload := &cobra.Command{
-		Use:   "upload <dSYM, .xcarchive, mapping.txt, .so or folder>...",
+		Use:   "upload <dSYM, .xcarchive, mapping.txt, .so, Flutter .symbols or folder>...",
 		Short: "Upload the dSYMs, R8 mappings and native libraries' symbols found at each path (only builds the project doesn't have yet)",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -112,7 +112,7 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 				natives = append(natives, libs...)
 			}
 			if len(files) == 0 && len(mappings) == 0 && len(natives) == 0 && len(dartApple) == 0 {
-				return usagef("No dSYM, R8 mapping or native library found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), or an Android app's build folder (app/build: its R8 mapping and native libraries).")
+				return usagef("No dSYM, R8 mapping or native library found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), an Android app's build folder (app/build: its R8 mapping and native libraries), or the folder a Flutter build's --split-debug-info wrote.")
 			}
 			// What to upload: each binary's symbol map, each mapping as it is.
 			type upload struct {
@@ -123,11 +123,14 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 			if len(files) > 0 || len(natives) > 0 || len(dartApple) > 0 {
 				sp := a.spin("Reading the debug symbols")
 				var maps []*symbols.Map
+				// A dSYM that can't be read (an empty framework's, a stray file) is passed over and
+				// named: one shouldn't keep the rest of an archive from uploading.
+				var unread []string
 				for _, f := range files {
 					m, err := symbols.Extract(f)
 					if err != nil {
-						sp.Stop()
-						return err
+						unread = append(unread, err.Error())
+						continue
 					}
 					maps = append(maps, m...)
 				}
@@ -162,6 +165,12 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 				if demangled != nil && !a.mode.JSON {
 					a.println(a.theme.Dim("Names stay mangled (" + demangled.Error() + "): run this where Xcode's tools or c++filt are installed for readable ones."))
 				}
+				if len(unread) > 0 && len(maps) == 0 && len(mappings) == 0 {
+					return fmt.Errorf("%s", strings.Join(unread, "; "))
+				}
+				if len(unread) > 0 && !a.mode.JSON {
+					a.println(a.theme.Dim("Not read (nothing uploaded for them): " + strings.Join(unread, "; ")))
+				}
 				if len(stripped) > 0 && !a.mode.JSON {
 					a.println(a.theme.Dim("Only stripped copies of " + strings.Join(stripped, ", ") + " (nothing to upload): point at the build folder, where Gradle keeps them unstripped."))
 				}
@@ -188,15 +197,18 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 			for i, u := range uploads {
 				ids[i] = u.id
 			}
-			var missing struct {
-				Missing []string `json:"missing"`
-			}
-			if err := a.client.JSON(ctx, api.Request{Method: http.MethodPost, Path: projectPath(p, "symbols/missing"), Body: map[string]any{"uuids": ids}}, &missing); err != nil {
-				return err
-			}
+			// The server answers about 500 builds at a time.
 			need := map[string]bool{}
-			for _, u := range missing.Missing {
-				need[u] = true
+			for start := 0; start < len(ids); start += 500 {
+				var missing struct {
+					Missing []string `json:"missing"`
+				}
+				if err := a.client.JSON(ctx, api.Request{Method: http.MethodPost, Path: projectPath(p, "symbols/missing"), Body: map[string]any{"uuids": ids[start:min(start+500, len(ids))]}}, &missing); err != nil {
+					return err
+				}
+				for _, u := range missing.Missing {
+					need[u] = true
+				}
 			}
 			type result struct {
 				UUID   string `json:"uuid"`
@@ -291,6 +303,8 @@ func symbolFiles(path string) (dwarf, mappings []string, natives []nativeLib, er
 			return nil, nil, []nativeLib{dartOnDisk(path)}, nil
 		case isDartSymbolsName(path):
 			return nil, nil, nil, nil // iOS's, a Mach-O: dartMachOFiles
+		case len(dartObfuscationMaps(path)) > 0:
+			return nil, nil, nil, nil // a Flutter obfuscation map: dartObfuscationMaps
 		case symbols.IsELF(path):
 			return nil, nil, []nativeLib{nativeOnDisk(path)}, nil
 		}

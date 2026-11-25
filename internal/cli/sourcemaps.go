@@ -96,7 +96,11 @@ or the map at $SOURCEMAP_FILE (iOS). Hermes's maps are found and read as they ar
 					changed++
 					a.done("Injected " + a.theme.Bold(r.Bundle) + " " + a.theme.Dim(r.DebugID))
 				} else {
-					a.println(a.theme.Dim("Already has its id: ") + r.Bundle)
+					what := r.Bundle
+					if what == "" {
+						what = r.Map + " (React Native: withLyrelog gave it its id)"
+					}
+					a.println(a.theme.Dim("Already has its id: ") + what)
 				}
 			}
 			if changed > 0 {

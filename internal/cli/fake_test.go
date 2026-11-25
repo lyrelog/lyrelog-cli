@@ -277,6 +277,10 @@ func (f *fake) serve(w http.ResponseWriter, r *http.Request) {
 	case p == "/api/projects/3f9a1c7e20bd/symbols/missing":
 		var body struct{ UUIDs []string }
 		json.NewDecoder(r.Body).Decode(&body)
+		if len(body.UUIDs) > 500 { // as the server
+			reply(400, map[string]any{"error": "send {\"uuids\": [...]}, at most 500"})
+			return
+		}
 		missing := []string{}
 		for _, u := range body.UUIDs {
 			if u != "B0000000-0000-4000-8000-000000000000" { // the one already uploaded

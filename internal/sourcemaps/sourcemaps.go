@@ -157,11 +157,9 @@ func standalone(maps []string, paired map[string]bool) []Bundle {
 	return out
 }
 
-// MapDebugID is a map's debug id: its debugId, else the source withLyrelog named after it.
+// MapDebugID is a map's debug id: the source withLyrelog named after it (the id the app sends;
+// another tool, Sentry's, may have put its own in debugId), else its debugId.
 func MapDebugID(raw map[string]json.RawMessage) string {
-	if id := DebugIDOf(nil, raw); id != "" {
-		return id
-	}
 	var sources []*string
 	_ = json.Unmarshal(raw["sources"], &sources)
 	if sections, ok := raw["sections"]; ok {
@@ -182,7 +180,7 @@ func MapDebugID(raw map[string]json.RawMessage) string {
 			}
 		}
 	}
-	return ""
+	return DebugIDOf(nil, raw)
 }
 
 func isBundleName(path string) bool {
@@ -294,7 +292,7 @@ func Inject(b Bundle) (InjectResult, error) {
 
 // directive is a directive at the start of code ("use strict";, "use client";): a statement
 // before it would turn it into a plain string.
-var directive = regexp.MustCompile(`^(?:\s|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/)*("[^"\\\n]*"|'[^'\\\n]*')\s*;`)
+var directive = regexp.MustCompile(`^(?:\s|/\*[^*]*\*+(?:[^/*][^*]*\*+)*/|//[^\n]*\n)*("[^"\\\n]*"|'[^'\\\n]*')\s*;`)
 
 // insertionPoint is where the snippet goes: after a hashbang line and the directives that open
 // the bundle, as a byte offset and a generated position.
@@ -480,8 +478,15 @@ func cleanMap(raw map[string]json.RawMessage, root string, named map[pos]string,
 	if err := json.Unmarshal(raw["sources"], &sources); err != nil {
 		return errors.New("no sources")
 	}
+	// sourceRoot is often a folder of the build machine: joined to each source, then gone.
+	var sourceRoot string
+	_ = json.Unmarshal(raw["sourceRoot"], &sourceRoot)
+	delete(raw, "sourceRoot")
 	for _, s := range sources {
 		if s != nil {
+			if sourceRoot != "" && !strings.Contains(*s, "://") && !strings.HasPrefix(*s, "/") {
+				*s = strings.TrimSuffix(sourceRoot, "/") + "/" + *s
+			}
 			*s = relativeSource(*s, root)
 		}
 	}
@@ -499,10 +504,14 @@ func cleanMap(raw map[string]json.RawMessage, root string, named map[pos]string,
 // from its node_modules on, else its file name. Relative sources and other URLs stay.
 func relativeSource(s, root string) string {
 	path, isFile := strings.CutPrefix(s, "file://")
+	windows := len(path) > 2 && path[1] == ':' && (path[2] == '\\' || path[2] == '/')
+	if windows {
+		path = strings.ReplaceAll(path, `\`, "/")
+	}
 	if !isFile && !filepath.IsAbs(path) && !(len(path) > 2 && path[1] == ':' && (path[2] == '\\' || path[2] == '/')) {
 		return s
 	}
-	if root != "" {
+	if root != "" && root != "/" { // relative to / would keep every folder
 		if rel, err := filepath.Rel(root, filepath.FromSlash(path)); err == nil && !strings.HasPrefix(rel, "..") {
 			return filepath.ToSlash(rel)
 		}
@@ -512,5 +521,5 @@ func relativeSource(s, root string) string {
 	if i := strings.LastIndex(filepath.ToSlash(path), "/node_modules/"); i >= 0 {
 		return filepath.ToSlash(path)[i+1:]
 	}
-	return filepath.Base(filepath.FromSlash(path))
+	return path[strings.LastIndexByte(path, '/')+1:]
 }

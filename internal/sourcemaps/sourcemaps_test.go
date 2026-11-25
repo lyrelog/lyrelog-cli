@@ -137,6 +137,7 @@ func TestTheSnippetGoesAfterHashbangAndDirectives(t *testing.T) {
 		`"use strict";var a=1;`:         `"use strict";`,
 		"/*! licence */\n\"use client\";\n'use strict';a()": "/*! licence */\n\"use client\";\n'use strict';",
 		`"use strict".length;`:                              "",
+		"// built by esbuild\n\"use strict\";a()":           "// built by esbuild\n\"use strict\";",
 	} {
 		off, at := insertionPoint([]byte(src))
 		if src[:off] != want {
@@ -181,11 +182,42 @@ func TestPrepareUploadsTheMapWithoutTheSources(t *testing.T) {
 		"file:///srv/tilefall/src/board.ts": "src/board.ts",
 		"/home/someone/elsewhere/board.ts":  "board.ts",
 		"/home/someone/repo/node_modules/react-native/Libraries/Pressability/Pressability.js": "node_modules/react-native/Libraries/Pressability/Pressability.js",
-		"../src/board.ts":               "../src/board.ts",
-		"webpack://tilefall/./src/a.ts": "webpack://tilefall/./src/a.ts",
+		"../src/board.ts":                "../src/board.ts",
+		`C:\Users\someone\shop\src\a.ts`: "a.ts",
+		"webpack://tilefall/./src/a.ts":  "webpack://tilefall/./src/a.ts",
 	} {
 		if got := relativeSource(in, "/srv/tilefall"); got != want {
 			t.Errorf("%s: %s, want %s", in, got, want)
 		}
+	}
+}
+
+// A map whose sourceRoot is a folder of the build machine (tsc, webpack) is uploaded without it:
+// its sources are joined to it first, then made relative as any other.
+func TestNoBuildMachineFolderLeavesInSourceRoot(t *testing.T) {
+	dir := t.TempDir()
+	bundle := filepath.Join(dir, "main.js")
+	must := func(err error) {
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	must(os.WriteFile(bundle, []byte("var a=1;\n//# debugId=c941b2a1-0e4f-4d6b-9a55-2f3c1d0e9b77\n"), 0o644))
+	must(os.WriteFile(bundle+".map", []byte(`{"version":3,"sourceRoot":"/home/someone/shop/","sources":["src/a.ts"],"names":[],"mappings":"AAAA"}`), 0o644))
+	p, err := Prepare(Bundle{Path: bundle, MapPath: bundle + ".map"}, "/home/someone/shop")
+	must(err)
+	if strings.Contains(string(p.Map), "someone") || !strings.Contains(string(p.Map), `"sources":["src/a.ts"]`) {
+		t.Fatalf("%s", p.Map)
+	}
+}
+
+// A React Native map Sentry's serializer gave its own debugId is uploaded under Lyrelog's, the
+// one its module is named after and the app sends.
+func TestAReactNativeMapGoesByLyrelogsID(t *testing.T) {
+	raw := map[string]json.RawMessage{}
+	_ = json.Unmarshal([]byte(`{"version":3,"debugId":"11111111-2222-4333-8444-555555555555",
+		"sources":["/__lyrelog_debug_id__79027e8a-181c-4afe-b9d2-9f3dbd73bc11.js"],"names":[],"mappings":"AAAA"}`), &raw)
+	if id := MapDebugID(raw); id != "79027e8a-181c-4afe-b9d2-9f3dbd73bc11" {
+		t.Fatalf("%s", id)
 	}
 }
