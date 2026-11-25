@@ -56,7 +56,7 @@ Force either with --json or --human (given both, the last one wins).`,
 	}
 	add("data", a.eventsCommand(), a.errorsCommand(), a.sessionsCommand(), a.peopleCommand(), a.personCommand(),
 		a.releasesCommand(), a.insightsCommand(), a.usageCommand())
-	add("manage", a.projectsCommand(), a.useCommand(), a.keysCommand(), a.orgsCommand())
+	add("manage", a.projectsCommand(), a.useCommand(), a.keysCommand(), a.symbolsCommand(), a.orgsCommand())
 	add("account", a.loginCommand(), a.logoutCommand(), a.whoamiCommand(), a.accountCommand(), a.tokensCommand(), a.openCommand(),
 		a.apiCommand(), a.skillsCommand(), a.versionCommand())
 	root.SetHelpCommandGroupID("account")

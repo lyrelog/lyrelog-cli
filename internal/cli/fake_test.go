@@ -56,6 +56,8 @@ type fake struct {
 	// tokenRefusal, when set, is how POST and PATCH /api/account/tokens refuse: "reauth" (the
 	// sign-in isn't recent) or "browser_only" (an access token asked).
 	tokenRefusal string
+	// uploads are the symbol maps uploaded.
+	uploads []upload
 	// followed are the received_after values the follow polls sent.
 	followed []int64
 	// arrived are the events that reach the server while following (received_at set).
@@ -66,6 +68,11 @@ func (f *fake) setChallenge(c string) {
 	f.mu.Lock()
 	f.challenge = c
 	f.mu.Unlock()
+}
+
+type upload struct {
+	contentType string
+	body        []byte
 }
 
 func newFake(t *testing.T) *fake {
@@ -267,6 +274,27 @@ func (f *fake) serve(w http.ResponseWriter, r *http.Request) {
 				"first_seen": ms(26 * time.Hour), "last_seen": ms(3 * time.Hour), "worst": "critical", "versions": []string{"2.4.1"},
 				"trend": []int64{0, 0, 0, 0, 1, 4, 7}},
 		}, "step_ms": 3600000, "first_bucket": ms(7 * 24 * time.Hour)})
+	case p == "/api/projects/3f9a1c7e20bd/symbols/missing":
+		var body struct{ UUIDs []string }
+		json.NewDecoder(r.Body).Decode(&body)
+		missing := []string{}
+		for _, u := range body.UUIDs {
+			if u != "B0000000-0000-4000-8000-000000000000" { // the one already uploaded
+				missing = append(missing, u)
+			}
+		}
+		reply(200, map[string]any{"missing": missing})
+	case p == "/api/projects/3f9a1c7e20bd/symbols" && r.Method == "POST":
+		data, _ := io.ReadAll(r.Body)
+		f.mu.Lock()
+		f.uploads = append(f.uploads, upload{contentType: r.Header.Get("Content-Type"), body: data})
+		f.mu.Unlock()
+		reply(201, map[string]any{"created": true})
+	case p == "/api/projects/3f9a1c7e20bd/symbols":
+		reply(200, map[string]any{"symbols": []map[string]any{
+			{"uuid": "A3F11B8C-0F44-3ABF-A3AA-25AC3AF39B8F", "arch": "arm64", "binary": "Tilefall", "bytes": 2400000,
+				"uploaded_at": now.Add(-2 * time.Hour).Format(time.RFC3339), "uploaded_by": "Ada", "last_used_at": nil},
+		}, "used_bytes": 2400000, "quota_bytes": 1 << 30})
 	case p == "/api/projects/3f9a1c7e20bd/keys":
 		if r.Method == "POST" {
 			var body struct{ Scope, Name string }

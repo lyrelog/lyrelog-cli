@@ -125,6 +125,26 @@ lyrelog person u_8f2a --export u_8f2a.ndjson           # an access request
 lyrelog person u_8f2a --delete                         # an erasure request (owners)
 ```
 
+Readable iOS and Mac crashes: upload each build's dSYMs once (only builds the project doesn't
+have are sent). The CLI reads them here and uploads a map of function and file names and lines,
+Swift names demangled with Xcode's tools:
+
+```bash
+lyrelog symbols upload path/to/Tilefall.xcarchive        # or a .dSYM, or a folder of them
+lyrelog symbols                                          # what's uploaded
+```
+
+In Xcode, a Run Script phase can do it on every archive, with an access token in
+`LYRELOG_TOKEN` (`lyrelog tokens create`). Add
+`${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}` to the phase's Input Files, so Xcode's script
+sandbox lets it read the dSYM:
+
+```bash
+[ "$CONFIGURATION" = "Release" ] || exit 0
+export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
+lyrelog symbols upload "$DWARF_DSYM_FOLDER_PATH" -p tilefall || echo "warning: Lyrelog symbols not uploaded"
+```
+
 ## For agents and scripts
 
 When stdout isn't a terminal, or the CLI runs inside a coding agent or CI, it writes JSON and

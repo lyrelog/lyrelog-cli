@@ -69,6 +69,8 @@ type Request struct {
 	Body   any
 	// NoAuth sends no token (the token exchange).
 	NoAuth bool
+	// ContentType sends a []byte Body as it is, with this type (a symbol map's gzip).
+	ContentType string
 }
 
 // Response is a successful answer.
@@ -92,7 +94,7 @@ func (c *Client) build(ctx context.Context, r Request) (*http.Request, error) {
 	switch b := r.Body.(type) {
 	case nil:
 	case []byte:
-		body, isJSON = bytes.NewReader(b), true
+		body, isJSON = bytes.NewReader(b), r.ContentType == ""
 	case json.RawMessage:
 		body, isJSON = bytes.NewReader(b), true
 	default:
@@ -117,6 +119,8 @@ func (c *Client) build(ctx context.Context, r Request) (*http.Request, error) {
 	}
 	if isJSON {
 		req.Header.Set("Content-Type", "application/json")
+	} else if r.ContentType != "" {
+		req.Header.Set("Content-Type", r.ContentType)
 	}
 	req.Header.Set("Accept", "application/json")
 	if c.UserAgent != "" {

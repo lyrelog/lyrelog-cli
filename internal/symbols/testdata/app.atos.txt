@@ -1,0 +1,1245 @@
+# What atos -i answers for every instruction of testdata/app.dwarf's __text (load address 0x100000000).
+0x100000930
+main (in app.dwarf) (main.swift:0)
+
+0x100000934
+main (in app.dwarf) (main.swift:0)
+
+0x100000938
+main (in app.dwarf) (main.swift:20)
+
+0x10000093c
+main (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000940
+main (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000944
+main (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000948
+entry() (in app.dwarf) (main.swift:16)
+
+0x10000094c
+entry() (in app.dwarf) (main.swift:16)
+
+0x100000950
+entry() (in app.dwarf) (main.swift:16)
+
+0x100000954
+entry() (in app.dwarf) (main.swift:16)
+
+0x100000958
+entry() (in app.dwarf) (main.swift:17)
+
+0x10000095c
+specialized _ArrayBuffer.immutableCount.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array._getCount() (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.count.getter (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000960
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000964
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000968
+entry() (in app.dwarf) (main.swift:17)
+
+0x10000096c
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000970
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000974
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000978
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x10000097c
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000980
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000984
+specialized _ContiguousArrayBuffer.firstElementAddress.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000988
+specialized _ContiguousArrayBuffer.firstElementAddress.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x10000098c
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000990
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000994
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000998
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x10000099c
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009a0
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009a4
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009a8
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009ac
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009b0
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009b4
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009b8
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009bc
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009c0
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009c4
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009c8
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009cc
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009d0
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009d4
+protocol witness for Strideable.advanced(by:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009d8
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009dc
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009e0
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009e4
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009e8
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009ec
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009f0
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009f4
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009f8
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x1000009fc
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a00
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a04
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a08
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a0c
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a10
+specialized ClosedRange<>.index(after:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.formIndex(after:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for IteratorProtocol.next() in conformance IndexingIterator<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a14
+specialized UnsafeMutablePointer<>.initialize(to:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copySequenceContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Sequence._copyContents(initializing:) (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyContents(initializing:) in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized _copyCollectionToContiguousArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Collection._copyToContiguousArray() (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Sequence._copyToContiguousArray() in conformance <> ClosedRange<A> (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.init<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a18
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a1c
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a20
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a24
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a28
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a2c
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a30
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a34
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a38
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a3c
+specialized _ContiguousArrayBuffer._initStorageHeader(count:capacity:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _ContiguousArrayBuffer.init(count:storage:) (in app.dwarf) (/<compiler-generated>:0)
+specialized static Array._adoptStorage(_:count:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a40
+specialized _ContiguousArrayBuffer._initStorageHeader(count:capacity:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _ContiguousArrayBuffer.init(count:storage:) (in app.dwarf) (/<compiler-generated>:0)
+specialized static Array._adoptStorage(_:count:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _allocateUninitializedArray<A>(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a44
+Checkout.run(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a48
+Checkout.run(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a4c
+Checkout.run(_:) (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a50
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a54
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a58
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a5c
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a60
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a64
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a68
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a6c
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a70
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a74
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a78
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a7c
+entry() (in app.dwarf) (main.swift:18)
+
+0x100000a80
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a84
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a88
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a8c
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a90
+entry() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000a94
+Swift runtime failure: arithmetic overflow (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a98
+Swift runtime failure: Range requires lowerBound <= upperBound (in app.dwarf) (/<compiler-generated>:0)
+entry() (in app.dwarf) (main.swift:17)
+
+0x100000a9c
+Cart.items.getter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000aa0
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000aa4
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000aa8
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000aac
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ab0
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ab4
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ab8
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000abc
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ac0
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ac4
+Cart.items.setter (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ac8
+Cart.items.modify (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000acc
+Cart.items.modify (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ad0
+Cart.items.modify (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ad4
+Cart.items.modify (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ad8
+Cart.items.modify (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000adc
+Cart.total() (in app.dwarf) (main.swift:3)
+
+0x100000ae0
+Cart.total() (in app.dwarf) (main.swift:3)
+
+0x100000ae4
+Cart.total() (in app.dwarf) (main.swift:3)
+
+0x100000ae8
+Cart.total() (in app.dwarf) (main.swift:3)
+
+0x100000aec
+specialized _ArrayBuffer.immutableCount.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array._getCount() (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.endIndex.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.endIndex.getter in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000af0
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000af4
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000af8
+specialized Array._getElement(_:wasNativeTypeChecked:matchingSubscriptCheck:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.read (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.subscript.read in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000afc
+specialized Array._getElement(_:wasNativeTypeChecked:matchingSubscriptCheck:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.read (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.subscript.read in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b00
+Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b04
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b08
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b0c
+protocol witness for static Equatable.== infix(_:_:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b10
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b14
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b18
+Cart.total() (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b1c
+Cart.total() (in app.dwarf) (main.swift:6)
+
+0x100000b20
+Cart.total() (in app.dwarf) (main.swift:6)
+
+0x100000b24
+Cart.total() (in app.dwarf) (main.swift:6)
+
+0x100000b28
+Cart.total() (in app.dwarf) (main.swift:6)
+
+0x100000b2c
+Cart.total() (in app.dwarf) (main.swift:6)
+
+0x100000b30
+Swift runtime failure: arithmetic overflow (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+
+0x100000b34
+Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b38
+Cart.init(items:) (in app.dwarf) (main.swift:0)
+
+0x100000b3c
+Checkout.run(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b40
+Checkout.deinit (in app.dwarf) (main.swift:13)
+
+0x100000b44
+Checkout.deinit (in app.dwarf) (main.swift:0)
+
+0x100000b48
+Checkout.__deallocating_deinit (in app.dwarf) (main.swift:13)
+
+0x100000b4c
+Checkout.__deallocating_deinit (in app.dwarf) (main.swift:0)
+
+0x100000b50
+Checkout.__deallocating_deinit (in app.dwarf) (main.swift:0)
+
+0x100000b54
+Checkout.__deallocating_deinit (in app.dwarf) (main.swift:0)
+
+0x100000b58
+Checkout.__allocating_init() (in app.dwarf) (main.swift:13)
+
+0x100000b5c
+Checkout.__allocating_init() (in app.dwarf) (main.swift:0)
+
+0x100000b60
+Checkout.__allocating_init() (in app.dwarf) (main.swift:0)
+
+0x100000b64
+Checkout.__allocating_init() (in app.dwarf) (main.swift:0)
+
+0x100000b68
+Checkout.init() (in app.dwarf) (main.swift:13)
+
+0x100000b6c
+Checkout.init() (in app.dwarf) (main.swift:0)
+
+0x100000b70
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b74
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b78
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b7c
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b80
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b84
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b88
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b8c
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b90
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b94
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b98
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000b9c
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ba0
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ba4
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000ba8
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bac
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bb0
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bb4
+_swift_stdlib_malloc_size (in app.dwarf) (LibcShims.h:111)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bb8
+_swift_stdlib_malloc_size (in app.dwarf) (LibcShims.h:111)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bbc
+_swift_stdlib_malloc_size (in app.dwarf) (LibcShims.h:111)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bc0
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bc4
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bc8
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bcc
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bd0
+specialized _ContiguousArrayBuffer._initStorageHeader(count:capacity:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bd4
+specialized _ContiguousArrayBuffer._initStorageHeader(count:capacity:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bd8
+specialized _ContiguousArrayBuffer._initStorageHeader(count:capacity:) (in app.dwarf) (/<compiler-generated>:0)
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bdc
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000be0
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000be4
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000be8
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bec
+specialized _ContiguousArrayBuffer.init(_uninitializedCount:minimumCapacity:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bf0
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bf4
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bf8
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000bfc
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c00
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c04
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c08
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c0c
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c10
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c14
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c18
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c1c
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c20
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c24
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c28
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c2c
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c30
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c34
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c38
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c3c
+__swift_instantiateConcreteTypeFromMangledNameV2 (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c40
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c44
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c48
+specialized Cart.price(_:) (in app.dwarf) (main.swift:0)
+
+0x100000c4c
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c50
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c54
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c58
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c5c
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c60
+Swift runtime failure: arithmetic overflow (in app.dwarf) (/<compiler-generated>:0)
+specialized Cart.price(_:) (in app.dwarf) (main.swift:10)
+
+0x100000c64
+specialized Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c68
+specialized Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c6c
+specialized Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000c70
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c74
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c78
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c7c
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c80
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c84
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c88
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c8c
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c90
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c94
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c98
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000c9c
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000ca0
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000ca4
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000ca8
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000cac
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000cb0
+specialized Cart.price(_:) (in app.dwarf) (main.swift:9)
+
+0x100000cb4
+specialized Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000cb8
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cbc
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cc0
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cc4
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cc8
+specialized _ArrayBuffer.immutableCount.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array._getCount() (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.endIndex.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.endIndex.getter in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000ccc
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cd0
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cd4
+specialized Array._getElement(_:wasNativeTypeChecked:matchingSubscriptCheck:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.read (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.subscript.read in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cd8
+specialized Array._getElement(_:wasNativeTypeChecked:matchingSubscriptCheck:) (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.getter (in app.dwarf) (/<compiler-generated>:0)
+specialized Array.subscript.read (in app.dwarf) (/<compiler-generated>:0)
+specialized protocol witness for Collection.subscript.read in conformance [A] (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cdc
+Cart.price(_:) (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000ce0
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000ce4
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000ce8
+protocol witness for static Equatable.== infix(_:_:) in conformance Int (in app.dwarf) (/<compiler-generated>:0)
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cec
+specialized IndexingIterator.next() (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cf0
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cf4
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cf8
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000cfc
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d00
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d04
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d08
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:0)
+
+0x100000d0c
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d10
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d14
+Swift runtime failure: arithmetic overflow (in app.dwarf) (/<compiler-generated>:0)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d18
+Swift runtime failure: arithmetic overflow (in app.dwarf) (/<compiler-generated>:0)
+Cart.total() (in app.dwarf) (main.swift:5)
+specialized Checkout.run(_:) (in app.dwarf) (main.swift:14)
+
+0x100000d1c
+type metadata accessor for Cart (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d20
+type metadata accessor for Cart (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d24
+type metadata accessor for Cart (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d28
+type metadata accessor for Cart (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d2c
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d30
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d34
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d38
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d3c
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d40
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d44
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
+
+0x100000d48
+type metadata accessor for Checkout (in app.dwarf) (/<compiler-generated>:0)
