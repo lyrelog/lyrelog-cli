@@ -129,7 +129,6 @@ func TestSymbolsUploadSendsANativeLibraryFromItsRichestCopy(t *testing.T) {
 	}
 }
 
-
 func must(t *testing.T, err error) {
 	t.Helper()
 	if err != nil {

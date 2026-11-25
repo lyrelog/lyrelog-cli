@@ -152,6 +152,19 @@ export PATH="$PATH:/opt/homebrew/bin:/usr/local/bin"
 lyrelog symbols upload "$DWARF_DSYM_FOLDER_PATH" -p tilefall || echo "warning: Lyrelog symbols not uploaded"
 ```
 
+Readable website errors: after the bundler and before deploying, give each bundle its debug id,
+then upload the source maps (the JavaScript SDK 1.1.0 or later sends each bundle's id with the
+stack):
+
+```bash
+lyrelog sourcemaps inject dist     # a debug id in each bundle and its map, and a line that tells the SDK
+lyrelog sourcemaps upload dist     # each map the project doesn't have, with the bundle's functions
+```
+
+Frames then read as the source: `Board.weight src/board.ts:14` rather than
+`n.weight main.js:1:139`. The sources' text stays on your machine (Lyrelog keeps no source
+code), and you don't need to deploy the `.map` files.
+
 ## For agents and scripts
 
 When stdout isn't a terminal, or the CLI runs inside a coding agent or CI, it writes JSON and

@@ -219,7 +219,9 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 		Args:  cobra.ExactArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			uuid := strings.ToUpper(args[0])
+			// As given: the server finds an id in either case (Apple UUIDs are kept upper-case,
+			// Android build ids and web debug ids lower-case).
+			uuid := strings.TrimSpace(args[0])
 			p, err := a.project(ctx, a.projectRef(nil))
 			if err != nil {
 				return err
