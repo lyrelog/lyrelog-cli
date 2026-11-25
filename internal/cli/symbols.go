@@ -66,14 +66,16 @@ func (a *App) symbolsCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:     "symbols",
 		Aliases: []string{"dsym", "dsyms"},
-		Short:   "Debug symbols that make iOS and Mac crashes readable: upload, list, delete",
-		Long: `Debug symbols turn a crash's offsets (Tilefall +0x1a2b3c) into the function, file and line
-it happened in, inlined functions included. Upload each build's dSYMs once, from Xcode or CI;
-crashes of builds without them keep their offsets.
-
-The CLI reads the dSYM here and uploads a compact map of it (functions, file names without their
-folders, lines), with Swift names demangled by Xcode's tools.`,
+		Short:   "Debug symbols that make crashes readable (iOS dSYMs, Android R8 mappings): upload, list, delete",
+		Long: `Debug symbols turn a crash into the functions, files and lines it happened in:
+- iOS and Mac: a dSYM turns offsets (Tilefall +0x1a2b3c) into functions, inlined ones included.
+  The CLI reads it here and uploads a compact map (function and file names without their
+  folders, lines), with Swift names demangled by Xcode's tools.
+- Android: a release's R8 mapping (mapping.txt) turns renamed classes and methods back. Each
+  frame names its mapping (r8-map-id-...), so uploading it once per build is all.
+Upload each build's once, from Xcode, Gradle or CI; crashes of builds without them stay as sent.`,
 		Example: `  lyrelog symbols upload ~/Library/Developer/Xcode/Archives/2026-11-25/Tilefall.xcarchive
+  lyrelog symbols upload app/build/outputs/mapping/release/mapping.txt
   lyrelog symbols upload "$DWARF_DSYM_FOLDER_PATH"
   lyrelog symbols
   lyrelog symbols delete A3F11B8C-0F44-3ABF-A3AA-25AC3AF39B8F`,
@@ -83,49 +85,72 @@ folders, lines), with Swift names demangled by Xcode's tools.`,
 	cmd.AddCommand(&cobra.Command{Use: "list", Short: "List the project's uploaded symbols", Args: cobra.NoArgs, RunE: list})
 
 	upload := &cobra.Command{
-		Use:   "upload <dSYM, .xcarchive or folder>...",
-		Short: "Upload the dSYMs found at each path (only builds the project doesn't have yet)",
+		Use:   "upload <dSYM, .xcarchive, mapping.txt or folder>...",
+		Short: "Upload the dSYMs and R8 mappings found at each path (only builds the project doesn't have yet)",
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var files []string
+			var files, mappings []string
 			for _, path := range args {
-				found, err := dwarfFiles(path)
+				found, maps, err := symbolFiles(path)
 				if err != nil {
 					return err
 				}
 				files = append(files, found...)
+				mappings = append(mappings, maps...)
 			}
-			if len(files) == 0 {
-				return usagef("No dSYM found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive or the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH).")
+			if len(files) == 0 && len(mappings) == 0 {
+				return usagef("No dSYM or R8 mapping found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), or an Android release's mapping.txt (app/build/outputs/mapping/release/).")
 			}
-			sp := a.spin("Reading the dSYMs")
-			var maps []*symbols.Map
-			for _, f := range files {
-				m, err := symbols.Extract(f)
+			// What to upload: each binary's symbol map, each mapping as it is.
+			type upload struct {
+				id, binary, arch string
+				data             func() ([]byte, error)
+			}
+			var uploads []upload
+			if len(files) > 0 {
+				sp := a.spin("Reading the dSYMs")
+				var maps []*symbols.Map
+				for _, f := range files {
+					m, err := symbols.Extract(f)
+					if err != nil {
+						sp.Stop()
+						return err
+					}
+					maps = append(maps, m...)
+				}
+				demangled := symbols.Demangle(ctx, maps)
+				sp.Stop()
+				if demangled != nil && !a.mode.JSON {
+					a.println(a.theme.Dim("Swift names stay mangled (" + demangled.Error() + "): run this on a Mac with Xcode for readable ones."))
+				}
+				for _, m := range maps {
+					uploads = append(uploads, upload{id: m.UUID, binary: m.Binary, arch: m.Arch, data: func() ([]byte, error) { return gzipJSON(m) }})
+				}
+			}
+			for _, path := range mappings {
+				text, err := os.ReadFile(path)
 				if err != nil {
-					sp.Stop()
 					return err
 				}
-				maps = append(maps, m...)
-			}
-			demangled := symbols.Demangle(ctx, maps)
-			sp.Stop()
-			if demangled != nil && !a.mode.JSON {
-				a.println(a.theme.Dim("Swift names stay mangled (" + demangled.Error() + "): run this on a Mac with Xcode for readable ones."))
+				id := r8MapID(text)
+				if id == "" {
+					return usagef("%s has no pg_map_id line", path).hint("R8 writes it from Android Gradle Plugin 8: build the release again with a newer AGP.")
+				}
+				uploads = append(uploads, upload{id: id, binary: "mapping.txt", arch: "jvm", data: func() ([]byte, error) { return gzipBytes(text) }})
 			}
 			p, err := a.project(ctx, a.projectRef(nil))
 			if err != nil {
 				return err
 			}
-			uuids := make([]string, len(maps))
-			for i, m := range maps {
-				uuids[i] = m.UUID
+			ids := make([]string, len(uploads))
+			for i, u := range uploads {
+				ids[i] = u.id
 			}
 			var missing struct {
 				Missing []string `json:"missing"`
 			}
-			if err := a.client.JSON(ctx, api.Request{Method: http.MethodPost, Path: projectPath(p, "symbols/missing"), Body: map[string]any{"uuids": uuids}}, &missing); err != nil {
+			if err := a.client.JSON(ctx, api.Request{Method: http.MethodPost, Path: projectPath(p, "symbols/missing"), Body: map[string]any{"uuids": ids}}, &missing); err != nil {
 				return err
 			}
 			need := map[string]bool{}
@@ -140,21 +165,21 @@ folders, lines), with Swift names demangled by Xcode's tools.`,
 				Bytes  int    `json:"bytes,omitempty"`
 			}
 			var results []result
-			for _, m := range maps {
-				r := result{UUID: m.UUID, Binary: m.Binary, Arch: m.Arch, Status: "already_there"}
-				if need[m.UUID] {
-					data, err := gzipJSON(m)
+			for _, u := range uploads {
+				r := result{UUID: u.id, Binary: u.binary, Arch: u.arch, Status: "already_there"}
+				if need[u.id] {
+					data, err := u.data()
 					if err != nil {
 						return err
 					}
-					sp := a.spin("Uploading " + m.Binary + " (" + m.Arch + ", " + mib(int64(len(data))) + ")")
+					sp := a.spin("Uploading " + u.binary + " (" + u.arch + ", " + mib(int64(len(data))) + ")")
 					err = a.client.JSON(ctx, api.Request{Method: http.MethodPost, Path: projectPath(p, "symbols"), Body: data, ContentType: "application/gzip"}, nil)
 					sp.Stop()
 					if err != nil {
 						return err
 					}
 					r.Status, r.Bytes = "uploaded", len(data)
-					need[m.UUID] = false // a fat dSYM lists one UUID once
+					need[u.id] = false // a fat dSYM lists one UUID once
 				}
 				results = append(results, r)
 			}
@@ -203,35 +228,78 @@ folders, lines), with Swift names demangled by Xcode's tools.`,
 	return cmd
 }
 
-// dwarfFiles finds the DWARF files at path: a .dSYM's Contents/Resources/DWARF/*, every .dSYM in
-// a folder or an .xcarchive (dSYMs/), or a Mach-O file given directly.
-func dwarfFiles(path string) ([]string, error) {
+// symbolFiles finds what to upload at path: DWARF files (a .dSYM's Contents/Resources/DWARF/*,
+// every .dSYM in a folder or an .xcarchive, or a Mach-O file given directly) and R8 mappings
+// (a mapping.txt, or each build/outputs/mapping/*/mapping.txt in a folder).
+func symbolFiles(path string) (dwarf, mappings []string, err error) {
 	info, err := os.Stat(path)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 	if !info.IsDir() {
-		return []string{path}, nil
+		if isR8Mapping(path) {
+			return nil, []string{path}, nil
+		}
+		return []string{path}, nil, nil
 	}
-	var out []string
 	err = filepath.WalkDir(path, func(p string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
+		}
+		if d.IsDir() && (d.Name() == ".git" || d.Name() == "node_modules" || d.Name() == ".gradle") {
+			return filepath.SkipDir
 		}
 		if d.IsDir() && strings.HasSuffix(d.Name(), ".dSYM") {
 			entries, err := os.ReadDir(filepath.Join(p, "Contents", "Resources", "DWARF"))
 			if err == nil {
 				for _, e := range entries {
 					if !e.IsDir() {
-						out = append(out, filepath.Join(p, "Contents", "Resources", "DWARF", e.Name()))
+						dwarf = append(dwarf, filepath.Join(p, "Contents", "Resources", "DWARF", e.Name()))
 					}
 				}
 			}
 			return filepath.SkipDir
 		}
+		if !d.IsDir() && d.Name() == "mapping.txt" && strings.Contains(filepath.ToSlash(p), "/outputs/mapping/") && isR8Mapping(p) {
+			mappings = append(mappings, p)
+		}
 		return nil
 	})
-	return out, err
+	return dwarf, mappings, err
+}
+
+// isR8Mapping: a text file that starts as R8 writes its mappings.
+func isR8Mapping(path string) bool {
+	f, err := os.Open(path)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+	head := make([]byte, 256)
+	n, _ := f.Read(head)
+	return strings.HasPrefix(string(head[:n]), "# compiler: R8") || strings.Contains(string(head[:n]), "com.android.tools.r8.mapping")
+}
+
+// r8MapID is a mapping's `# pg_map_id:`, the id every frame of its build names.
+func r8MapID(text []byte) string {
+	for _, line := range strings.SplitN(string(text[:min(len(text), 4096)]), "\n", 32) {
+		if id, ok := strings.CutPrefix(strings.TrimSpace(line), "# pg_map_id: "); ok {
+			return id
+		}
+	}
+	return ""
+}
+
+func gzipBytes(data []byte) ([]byte, error) {
+	var b bytes.Buffer
+	w, _ := gzip.NewWriterLevel(&b, gzip.BestCompression)
+	if _, err := w.Write(data); err != nil {
+		return nil, err
+	}
+	if err := w.Close(); err != nil {
+		return nil, err
+	}
+	return b.Bytes(), nil
 }
 
 func gzipJSON(v any) ([]byte, error) {

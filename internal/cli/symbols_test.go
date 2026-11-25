@@ -5,6 +5,8 @@ import (
 	"compress/gzip"
 	"encoding/json"
 	"io"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 )
@@ -44,7 +46,7 @@ func TestSymbolsUploadSendsTheMapOfEachMissingBuild(t *testing.T) {
 func TestSymbolsUploadWithoutADSYMSaysWhereToPoint(t *testing.T) {
 	f := newFake(t)
 	_, errOut, code := f.run(t, runOpts{}, "symbols", "upload", t.TempDir(), "--json")
-	if code == 0 || !strings.Contains(errOut, "No dSYM found") {
+	if code == 0 || !strings.Contains(errOut, "No dSYM or R8 mapping found") {
 		t.Fatalf("exit %d: %s", code, errOut)
 	}
 }
@@ -56,3 +58,39 @@ func TestSymbolsListsTheProjectsBuilds(t *testing.T) {
 		t.Fatalf("exit %d: %s\n%s", code, out, errOut)
 	}
 }
+
+// An Android release's mapping.txt is uploaded as it is (gzip), under its map id: the id every
+// frame of that build names. Found inside a project folder too.
+func TestSymbolsUploadSendsAnR8Mapping(t *testing.T) {
+	f := newFake(t)
+	dir := t.TempDir()
+	path := filepath.Join(dir, "app", "build", "outputs", "mapping", "release", "mapping.txt")
+	if err := os.MkdirAll(filepath.Dir(path), 0o755); err != nil {
+		t.Fatal(err)
+	}
+	const id = "0bf7286072d03642f0a5dd40075fcb11200b239911b907179c70080d08263a1d"
+	mapping := "# compiler: R8\n# compiler_version: 9.5.29\n# pg_map_id: " + id + "\n" +
+		"com.example.tilefall.BoardActivity -> com.example.tilefall.BoardActivity:\n    1:3:void <init>():15:15 -> <init>\n"
+	if err := os.WriteFile(path, []byte(mapping), 0o644); err != nil {
+		t.Fatal(err)
+	}
+	out, errOut, code := f.run(t, runOpts{}, "symbols", "upload", dir, "--json")
+	if code != 0 {
+		t.Fatalf("exit %d: %s", code, errOut)
+	}
+	if !strings.Contains(out, `"uuid":"`+id+`"`) || !strings.Contains(out, `"status":"uploaded"`) {
+		t.Fatalf("output: %s", out)
+	}
+	if len(f.uploads) != 1 {
+		t.Fatalf("uploads: %d", len(f.uploads))
+	}
+	zr, err := gzip.NewReader(bytes.NewReader(f.uploads[0].body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	sent, _ := io.ReadAll(zr)
+	if string(sent) != mapping {
+		t.Fatalf("the mapping sent isn't the file: %q", sent)
+	}
+}
+
