@@ -6,6 +6,7 @@ package sourcemaps
 
 import (
 	"bytes"
+	"cmp"
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
@@ -17,7 +18,9 @@ import (
 	"strings"
 )
 
-// Bundle is a JavaScript file of the build and its source map.
+// Bundle is a JavaScript file of the build and its source map. Path is "" for a map whose bundle
+// isn't JavaScript text (React Native's Hermes bytecode): its id is in the map, put there by
+// `withLyrelog` (@lyrelog/react-native/metro).
 type Bundle struct {
 	Path    string
 	MapPath string
@@ -34,6 +37,9 @@ var (
 	debugIDComment = regexp.MustCompile(`(?m)^//# debugId=([0-9a-fA-F-]{36})\s*$`)
 	mapURLComment  = regexp.MustCompile(`(?m)^//[#@] sourceMappingURL=(\S+)\s*$`)
 	uuidRule       = regexp.MustCompile(`^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$`)
+	// metroMarker: the source `withLyrelog` names after the bundle's id. Hermes's composed map
+	// keeps its sources' names but not debugId.
+	metroMarker = regexp.MustCompile(`__lyrelog_debug_id__([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})\.js$`)
 )
 
 // ErrInlineMap: the bundle carries its map inline (a data: URL), which would ship the sources to
@@ -48,7 +54,13 @@ func Find(root string) (bundles []Bundle, inline []string, err error) {
 	if err != nil {
 		return nil, nil, err
 	}
+	paired := map[string]bool{}
+	var maps []string
 	visit := func(path string) error {
+		if strings.HasSuffix(path, ".map") {
+			maps = append(maps, path)
+			return nil
+		}
 		if !isBundleName(path) {
 			return nil
 		}
@@ -75,11 +87,15 @@ func Find(root string) (bundles []Bundle, inline []string, err error) {
 		}
 		if exists(mapPath) {
 			bundles = append(bundles, Bundle{Path: path, MapPath: mapPath})
+			paired[filepath.Clean(mapPath)] = true
 		}
 		return nil
 	}
 	if !info.IsDir() {
-		return bundles, inline, visit(root)
+		if err := visit(root); err != nil {
+			return nil, nil, err
+		}
+		return append(bundles, standalone(maps, paired)...), inline, nil
 	}
 	err = filepath.WalkDir(root, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
@@ -93,7 +109,80 @@ func Find(root string) (bundles []Bundle, inline []string, err error) {
 		}
 		return nil
 	})
-	return bundles, inline, err
+	if err != nil {
+		return nil, nil, err
+	}
+	return append(bundles, standalone(maps, paired)...), inline, nil
+}
+
+// standalone are the maps with no JavaScript bundle beside them that carry a debug id: React
+// Native's (Hermes's composed map, Metro's packager map). Of two with one id, Hermes's is kept:
+// it's the one that maps the bytecode the app runs.
+func standalone(maps []string, paired map[string]bool) []Bundle {
+	type found struct {
+		path   string
+		hermes bool
+	}
+	byID := map[string]found{}
+	var order []string
+	for _, path := range maps {
+		if paired[filepath.Clean(path)] {
+			continue
+		}
+		text, err := os.ReadFile(path)
+		if err != nil {
+			continue
+		}
+		var raw map[string]json.RawMessage
+		if json.Unmarshal(text, &raw) != nil {
+			continue
+		}
+		id := MapDebugID(raw)
+		if id == "" {
+			continue
+		}
+		_, hermes := raw["x_hermes_function_offsets"]
+		old, seen := byID[id]
+		if !seen {
+			order = append(order, id)
+		}
+		if !seen || hermes && !old.hermes {
+			byID[id] = found{path, hermes}
+		}
+	}
+	out := make([]Bundle, 0, len(order))
+	for _, id := range order {
+		out = append(out, Bundle{MapPath: byID[id].path})
+	}
+	return out
+}
+
+// MapDebugID is a map's debug id: its debugId, else the source withLyrelog named after it.
+func MapDebugID(raw map[string]json.RawMessage) string {
+	if id := DebugIDOf(nil, raw); id != "" {
+		return id
+	}
+	var sources []*string
+	_ = json.Unmarshal(raw["sources"], &sources)
+	if sections, ok := raw["sections"]; ok {
+		var list []struct {
+			Map struct {
+				Sources []*string `json:"sources"`
+			} `json:"map"`
+		}
+		_ = json.Unmarshal(sections, &list)
+		for _, s := range list {
+			sources = append(sources, s.Map.Sources...)
+		}
+	}
+	for _, s := range sources {
+		if s != nil {
+			if g := metroMarker.FindStringSubmatch(*s); g != nil {
+				return g[1]
+			}
+		}
+	}
+	return ""
 }
 
 func isBundleName(path string) bool {
@@ -148,6 +237,15 @@ type InjectResult struct {
 // keeps it (Rollup's and Rolldown's sourcemapDebugIds, Turbopack's, an earlier inject), and one
 // that registers it already (an earlier inject, Sentry's bundler plugins) is left as it is.
 func Inject(b Bundle) (InjectResult, error) {
+	if b.Path == "" { // React Native: withLyrelog gave it its id
+		text, err := os.ReadFile(b.MapPath)
+		if err != nil {
+			return InjectResult{}, err
+		}
+		var raw map[string]json.RawMessage
+		_ = json.Unmarshal(text, &raw)
+		return InjectResult{ID: MapDebugID(raw)}, nil
+	}
 	bundle, err := os.ReadFile(b.Path)
 	if err != nil {
 		return InjectResult{}, err
@@ -306,9 +404,12 @@ type Prepared struct {
 // given as absolute paths made relative to root (or their file names), so no build machine's
 // folders leave it.
 func Prepare(b Bundle, root string) (Prepared, error) {
-	bundle, err := os.ReadFile(b.Path)
-	if err != nil {
-		return Prepared{}, err
+	var bundle []byte
+	if b.Path != "" {
+		var err error
+		if bundle, err = os.ReadFile(b.Path); err != nil {
+			return Prepared{}, err
+		}
 	}
 	mapText, err := os.ReadFile(b.MapPath)
 	if err != nil {
@@ -319,17 +420,24 @@ func Prepare(b Bundle, root string) (Prepared, error) {
 		return Prepared{}, fmt.Errorf("%s: not a source map: %w", b.MapPath, err)
 	}
 	p := Prepared{ID: DebugIDOf(bundle, raw), Name: filepath.Base(b.Path)}
+	if b.Path == "" {
+		p.ID, p.Name = MapDebugID(raw), strings.TrimSuffix(filepath.Base(b.MapPath), ".map")
+	}
 	if p.ID == "" {
-		return p, fmt.Errorf("%s: %w", b.Path, ErrNoDebugID)
+		return p, fmt.Errorf("%s: %w", cmp.Or(b.Path, b.MapPath), ErrNoDebugID)
 	}
 	named := map[pos]string{}
 	if err := cleanMap(raw, root, named, 0, 0, &p.Shrunk); err != nil {
 		return p, fmt.Errorf("%s: %w", b.MapPath, err)
 	}
-	if fns, err := ReadFunctions(bundle, named); err != nil {
-		p.Warn = err.Error()
-	} else {
-		raw["x_lyrelog_functions"], _ = json.Marshal(fns)
+	// The bundle's functions, when it's JavaScript text (Hermes bytecode isn't; React Native's
+	// maps name their functions themselves, in Metro's x_facebook_sources).
+	if b.Path != "" {
+		if fns, err := ReadFunctions(bundle, named); err != nil {
+			p.Warn = err.Error()
+		} else {
+			raw["x_lyrelog_functions"], _ = json.Marshal(fns)
+		}
 	}
 	raw["debugId"], _ = json.Marshal(p.ID)
 	delete(raw, "debug_id")
@@ -388,7 +496,7 @@ func cleanMap(raw map[string]json.RawMessage, root string, named map[pos]string,
 }
 
 // relativeSource: an absolute path (or file:// URL) relative to root when it's under it, else
-// its file name. Relative sources and other URLs stay.
+// from its node_modules on, else its file name. Relative sources and other URLs stay.
 func relativeSource(s, root string) string {
 	path, isFile := strings.CutPrefix(s, "file://")
 	if !isFile && !filepath.IsAbs(path) && !(len(path) > 2 && path[1] == ':' && (path[2] == '\\' || path[2] == '/')) {
@@ -398,6 +506,11 @@ func relativeSource(s, root string) string {
 		if rel, err := filepath.Rel(root, filepath.FromSlash(path)); err == nil && !strings.HasPrefix(rel, "..") {
 			return filepath.ToSlash(rel)
 		}
+	}
+	// A package installed above the project (a monorepo's node_modules) keeps its path from
+	// node_modules on, so it's still told apart from the app's own code.
+	if i := strings.LastIndex(filepath.ToSlash(path), "/node_modules/"); i >= 0 {
+		return filepath.ToSlash(path)[i+1:]
 	}
 	return filepath.Base(filepath.FromSlash(path))
 }

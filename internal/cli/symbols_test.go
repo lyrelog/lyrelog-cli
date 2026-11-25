@@ -135,3 +135,29 @@ func must(t *testing.T, err error) {
 		t.Fatal(err)
 	}
 }
+
+// A Flutter build's obfuscation map goes with its Dart symbols when one is given; two can't be
+// told apart, and a file that isn't one is said to be so.
+func TestADartObfuscationMapIsFoundBesideItsSymbols(t *testing.T) {
+	dir := t.TempDir()
+	must(t, os.WriteFile(filepath.Join(dir, "obfuscation.map.json"), []byte(`["LanternApp","oW","_ShelfPageState","_qW"]`), 0o644))
+	must(t, os.WriteFile(filepath.Join(dir, "other.json"), []byte(`{"not":"a map"}`), 0o644))
+	found := dartObfuscationMaps(dir)
+	if len(found) != 1 {
+		t.Fatalf("%v", found)
+	}
+	names, err := dartNames(found)
+	if err != nil || len(names) != 4 || names[3] != "_qW" {
+		t.Fatalf("%v %v", names, err)
+	}
+	if _, err := dartNames([]string{found[0], found[0]}); err == nil {
+		t.Fatal("two maps")
+	}
+	must(t, os.WriteFile(filepath.Join(dir, "odd.json"), []byte(`["a","b","c"]`), 0o644))
+	if _, err := dartNames([]string{filepath.Join(dir, "odd.json")}); err == nil {
+		t.Fatal("an odd list")
+	}
+	if dartBinary("app.android-arm64.symbols") != "libapp.so" || dartBinary("app.ios-arm64.symbols") != "App" {
+		t.Fatal("dartBinary")
+	}
+}

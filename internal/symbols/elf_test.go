@@ -95,3 +95,21 @@ func TestAStrippedLibraryIsTheLeastRich(t *testing.T) {
 		t.Fatalf("%s %d", id, rich)
 	}
 }
+
+// A Flutter build's Dart files are named as Dart names them when they're the SDK's, the engine's
+// or a package's, and by their base name when they're the app's (as the build machine's folders
+// never leave it).
+func TestDartFilesAreNamedAsDartNamesThem(t *testing.T) {
+	for in, want := range map[string]string{
+		"third_party/dart/sdk/lib/async/future.dart":                "dart:async/future.dart",
+		"third_party/dart/sdk/lib/_internal/vm/lib/timer_impl.dart": "dart:_internal/timer_impl.dart",
+		"lib/ui/hooks.dart": "dart:ui/hooks.dart",
+		"/opt/flutter/packages/flutter/lib/src/widgets/framework.dart":           "package:flutter/src/widgets/framework.dart",
+		"/home/someone/.pub-cache/hosted/pub.dev/lyrelog-1.0.3/lib/lyrelog.dart": "package:lyrelog/lyrelog.dart",
+		"/home/someone/tilefall/lib/board.dart":                                  "board.dart",
+	} {
+		if got := DartFile(in); got != want {
+			t.Errorf("%s: %s, want %s", in, got, want)
+		}
+	}
+}

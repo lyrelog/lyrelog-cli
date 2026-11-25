@@ -180,8 +180,9 @@ func TestPrepareUploadsTheMapWithoutTheSources(t *testing.T) {
 		"/srv/tilefall/src/board.ts":        "src/board.ts",
 		"file:///srv/tilefall/src/board.ts": "src/board.ts",
 		"/home/someone/elsewhere/board.ts":  "board.ts",
-		"../src/board.ts":                   "../src/board.ts",
-		"webpack://tilefall/./src/a.ts":     "webpack://tilefall/./src/a.ts",
+		"/home/someone/repo/node_modules/react-native/Libraries/Pressability/Pressability.js": "node_modules/react-native/Libraries/Pressability/Pressability.js",
+		"../src/board.ts":               "../src/board.ts",
+		"webpack://tilefall/./src/a.ts": "webpack://tilefall/./src/a.ts",
 	} {
 		if got := relativeSource(in, "/srv/tilefall"); got != want {
 			t.Errorf("%s: %s, want %s", in, got, want)

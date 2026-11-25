@@ -135,6 +135,10 @@ lyrelog symbols upload app/build                         # an Android app: its R
 lyrelog symbols                                          # what's uploaded
 ```
 
+Flutter releases built with `--split-debug-info` (and `--obfuscate`) print Dart stacks by
+address: `lyrelog symbols upload build/debug-info` uploads that folder's symbols, and with the
+`--save-obfuscation-map` file beside it an error's obfuscated type reads as its real name.
+
 Android releases shrunk by R8 name their mapping in every frame (`r8-map-id-…`, Android Gradle
 Plugin 8+), so uploading each release's `mapping.txt` once is all: its crashes read as your
 source again. Native libraries (C, C++) are matched by their build id: the command finds the
@@ -164,6 +168,10 @@ lyrelog sourcemaps upload dist     # each map the project doesn't have, with the
 Frames then read as the source: `Board.weight src/board.ts:14` rather than
 `n.weight main.js:1:139`. The sources' text stays on your machine (Lyrelog keeps no source
 code), and you don't need to deploy the `.map` files.
+
+React Native gives its release bundles their ids in `metro.config.js` (`withLyrelog` from
+`@lyrelog/react-native/metro`); after the release build, `lyrelog sourcemaps upload
+android/app/build` (or the iOS map at `$SOURCEMAP_FILE`) finds Hermes's source maps.
 
 ## For agents and scripts
 

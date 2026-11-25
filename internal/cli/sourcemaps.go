@@ -31,10 +31,15 @@ source map turns them back into the functions, files and lines of the source.
    bundle's functions, so frames read by their names in the source. The sources' text stays
    here: Lyrelog keeps no source code. You don't need to deploy the .map files.
 
-Run inject and upload in the same build, after the bundler and before deploying.`,
+Run inject and upload in the same build, after the bundler and before deploying.
+
+React Native: withLyrelog (@lyrelog/react-native/metro, in metro.config.js) gives release
+bundles their ids instead of inject; after the release build, upload android/app/build (Android)
+or the map at $SOURCEMAP_FILE (iOS). Hermes's maps are found and read as they are.`,
 		Example: `  lyrelog sourcemaps inject dist
   lyrelog sourcemaps upload dist
-  lyrelog sourcemaps upload .next/static --project shop`,
+  lyrelog sourcemaps upload .next/static --project shop
+  lyrelog sourcemaps upload android/app/build          # React Native, with withLyrelog`,
 		Args: cobra.NoArgs,
 		RunE: func(cmd *cobra.Command, args []string) error { return cmd.Help() },
 	}

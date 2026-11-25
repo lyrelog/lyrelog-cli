@@ -76,9 +76,14 @@ func (a *App) symbolsCommand() *cobra.Command {
 - Android native code (C, C++: the NDK, a game engine): each library's debug information turns
   its crashes' addresses into functions, files and lines, by the library's build id. Gradle
   keeps the unstripped libraries under build/; point at app/build and both are found.
+- Flutter releases built with --split-debug-info (and --obfuscate): the folder it wrote
+  (app.android-arm64.symbols, app.ios-arm64.symbols) turns Dart frames printed by address into
+  functions, files and lines. Give the --save-obfuscation-map file too, and an error's
+  obfuscated type reads as its real name.
 Upload each build's once, from Xcode, Gradle or CI; crashes of builds without them stay as sent.`,
 		Example: `  lyrelog symbols upload ~/Library/Developer/Xcode/Archives/2026-11-25/Tilefall.xcarchive
   lyrelog symbols upload app/build       # an Android app: its R8 mapping and native libraries
+  lyrelog symbols upload build/debug-info build/obfuscation.map.json   # a Flutter release
   lyrelog symbols upload "$DWARF_DSYM_FOLDER_PATH"
   lyrelog symbols
   lyrelog symbols delete A3F11B8C-0F44-3ABF-A3AA-25AC3AF39B8F`,
@@ -93,9 +98,11 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 		Args:  cobra.MinimumNArgs(1),
 		RunE: func(cmd *cobra.Command, args []string) error {
 			ctx := cmd.Context()
-			var files, mappings []string
+			var files, mappings, obfuscations, dartApple []string
 			var natives []nativeLib
 			for _, path := range args {
+				obfuscations = append(obfuscations, dartObfuscationMaps(path)...)
+				dartApple = append(dartApple, dartMachOFiles(path)...)
 				found, maps, libs, err := symbolFiles(path)
 				if err != nil {
 					return err
@@ -104,7 +111,7 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 				mappings = append(mappings, maps...)
 				natives = append(natives, libs...)
 			}
-			if len(files) == 0 && len(mappings) == 0 && len(natives) == 0 {
+			if len(files) == 0 && len(mappings) == 0 && len(natives) == 0 && len(dartApple) == 0 {
 				return usagef("No dSYM, R8 mapping or native library found at %s", strings.Join(args, ", ")).hint("Point at a .dSYM, an .xcarchive, the folder Xcode writes them to ($DWARF_DSYM_FOLDER_PATH), or an Android app's build folder (app/build: its R8 mapping and native libraries).")
 			}
 			// What to upload: each binary's symbol map, each mapping as it is.
@@ -113,7 +120,7 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 				data             func() ([]byte, error)
 			}
 			var uploads []upload
-			if len(files) > 0 || len(natives) > 0 {
+			if len(files) > 0 || len(natives) > 0 || len(dartApple) > 0 {
 				sp := a.spin("Reading the debug symbols")
 				var maps []*symbols.Map
 				for _, f := range files {
@@ -130,6 +137,26 @@ Upload each build's once, from Xcode, Gradle or CI; crashes of builds without th
 					return err
 				}
 				maps = append(maps, native...)
+				for _, path := range dartApple {
+					m, err := extractDartMachO(path)
+					if err != nil {
+						sp.Stop()
+						return err
+					}
+					maps = append(maps, m)
+				}
+				// A Flutter build's obfuscation map goes with its Dart symbols: the server renames
+				// an error's type back with it. With more than one, which goes with which can't be told.
+				if names, err := dartNames(obfuscations); err != nil {
+					sp.Stop()
+					return err
+				} else if names != nil {
+					for _, m := range maps {
+						if m.Dart {
+							m.DartObfuscation = names
+						}
+					}
+				}
 				demangled := symbols.Demangle(ctx, maps)
 				sp.Stop()
 				if demangled != nil && !a.mode.JSON {
@@ -260,6 +287,10 @@ func symbolFiles(path string) (dwarf, mappings []string, natives []nativeLib, er
 		case strings.HasSuffix(path, ".zip"):
 			libs, err := nativeInZip(path)
 			return nil, nil, libs, err
+		case symbols.IsELF(path) && isDartSymbolsName(path):
+			return nil, nil, []nativeLib{dartOnDisk(path)}, nil
+		case isDartSymbolsName(path):
+			return nil, nil, nil, nil // iOS's, a Mach-O: dartMachOFiles
 		case symbols.IsELF(path):
 			return nil, nil, []nativeLib{nativeOnDisk(path)}, nil
 		}
@@ -297,6 +328,8 @@ func symbolFiles(path string) (dwarf, mappings []string, natives []nativeLib, er
 			natives = append(natives, libs...)
 		case isNativeLibName(d.Name()) && d.Type().IsRegular() && symbols.IsELF(p):
 			natives = append(natives, nativeOnDisk(p))
+		case isDartSymbolsName(d.Name()) && d.Type().IsRegular() && symbols.IsELF(p):
+			natives = append(natives, dartOnDisk(p))
 		}
 		return nil
 	})

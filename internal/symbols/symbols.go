@@ -11,6 +11,7 @@ import (
 	"debug/macho"
 	"errors"
 	"fmt"
+	"io"
 	"path/filepath"
 	"sort"
 	"strings"
@@ -37,6 +38,11 @@ type Map struct {
 	Inlines [][6]uint64 `json:"inlines"`
 	// Lines: [lo, file, line], sorted by lo; a row holds until the next one. Line 0: unknown.
 	Lines [][3]uint64 `json:"lines"`
+	// DartObfuscation: a Flutter build's obfuscation map (--save-obfuscation-map), as Dart
+	// writes it: [original, obfuscated, ...]. The server renames an error's type back with it.
+	DartObfuscation []string `json:"dart_obfuscation,omitempty"`
+	// Dart: read from a Flutter build's Dart debug information (not uploaded).
+	Dart bool `json:"-"`
 }
 
 // Extract reads every architecture of a Mach-O file with DWARF (a dSYM's
@@ -99,6 +105,16 @@ var ErrNoDebugInfo = errors.New("no debug information")
 type builder struct {
 	m       *Map
 	strings map[string]uint64
+	// fileName is how a source file is named in the map: its base name (no build machine's
+	// folders), or Dart's own names for the Dart SDK's and packages' files (DartFile).
+	fileName func(string) string
+}
+
+func (b *builder) file(path string) string {
+	if b.fileName != nil {
+		return b.fileName(path)
+	}
+	return filepath.Base(path)
 }
 
 func (b *builder) str(s string) uint64 {
@@ -111,7 +127,27 @@ func (b *builder) str(s string) uint64 {
 	return i
 }
 
+// ExtractDartMachO reads an iOS or macOS Flutter build's Dart debug information
+// (app.ios-arm64.symbols, a Mach-O dSYM companion file with App.framework's UUID), with Dart's
+// names for the SDK's and packages' files (DartFile).
+func ExtractDartMachO(r io.ReaderAt, binaryName string) (*Map, error) {
+	f, err := macho.NewFile(r)
+	if err != nil {
+		return nil, fmt.Errorf("%s: not a Mach-O file: %w", binaryName, err)
+	}
+	defer f.Close()
+	m, err := extractWith(f, binaryName, DartFile)
+	if m != nil {
+		m.Dart = true
+	}
+	return m, err
+}
+
 func extract(f *macho.File, binaryName string) (*Map, error) {
+	return extractWith(f, binaryName, nil)
+}
+
+func extractWith(f *macho.File, binaryName string, fileName func(string) string) (*Map, error) {
 	text := f.Segment("__TEXT")
 	if text == nil {
 		return nil, fmt.Errorf("%s: no __TEXT segment", binaryName)
@@ -124,7 +160,7 @@ func extract(f *macho.File, binaryName string) (*Map, error) {
 	if err != nil {
 		return nil, fmt.Errorf("%s (%s): %w", binaryName, m.Arch, ErrNoDebugInfo)
 	}
-	b := &builder{m: m, strings: map[string]uint64{"": 0}}
+	b := &builder{m: m, strings: map[string]uint64{"": 0}, fileName: fileName}
 	in := func(pc uint64) (uint64, bool) {
 		if pc < text.Addr || pc >= text.Addr+text.Memsz {
 			return 0, false
@@ -201,7 +237,7 @@ func (b *builder) walk(d *dwarf.Data, in func(uint64) (uint64, bool), binaryName
 				depth := state.inline + 1
 				callFile := ""
 				if i, ok := e.Val(dwarf.AttrCallFile).(int64); ok && i >= 0 && int(i) < len(files) && files[i] != nil {
-					callFile = filepath.Base(files[i].Name)
+					callFile = b.file(files[i].Name)
 				}
 				callLine, _ := e.Val(dwarf.AttrCallLine).(int64)
 				ranges, _ := d.Ranges(e)
@@ -325,7 +361,7 @@ func (b *builder) lines(lr *dwarf.LineReader, in func(uint64) (uint64, bool)) {
 		}
 		file := ""
 		if le.File != nil {
-			file = filepath.Base(le.File.Name)
+			file = b.file(le.File.Name)
 		}
 		b.m.Lines = append(b.m.Lines, [3]uint64{lo, b.str(file), uint64(max(le.Line, 0))})
 	}

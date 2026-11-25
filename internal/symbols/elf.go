@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"sort"
 	"strings"
 )
@@ -34,6 +35,23 @@ func IsELF(path string) bool {
 // keeps under build/intermediates) or the debug file of one (native-debug-symbols.zip's .so.dbg).
 // name is the library's name as a crash names it ("libgame.so").
 func ExtractELF(r io.ReaderAt, name string) (*Map, error) {
+	return extractELF(r, name, nil)
+}
+
+// ExtractDart reads a Flutter build's Dart debug information (--split-debug-info's
+// app.<platform>-<arch>.symbols, an ELF file whose build id the build's stacks print): the same
+// map as a native library's, with the Dart SDK's and packages' files named as Dart names them
+// (dart:async/future.dart, package:flutter/src/widgets/framework.dart), so they're told apart
+// from the app's own (main.dart).
+func ExtractDart(r io.ReaderAt, name string) (*Map, error) {
+	m, err := extractELF(r, name, DartFile)
+	if m != nil {
+		m.Dart = true
+	}
+	return m, err
+}
+
+func extractELF(r io.ReaderAt, name string, fileName func(string) string) (*Map, error) {
 	f, err := elf.NewFile(r)
 	if err != nil {
 		return nil, fmt.Errorf("%s: not an ELF file: %w", name, err)
@@ -66,7 +84,7 @@ func ExtractELF(r io.ReaderAt, name string) (*Map, error) {
 		}
 		return 0, false
 	}
-	b := &builder{m: m, strings: map[string]uint64{"": 0}}
+	b := &builder{m: m, strings: map[string]uint64{"": 0}, fileName: fileName}
 	if d, err := f.DWARF(); err == nil {
 		if err := b.walk(d, in, name); err != nil {
 			return nil, err
@@ -183,4 +201,51 @@ func Richness(r io.ReaderAt) (id string, richness int) {
 		return id, 1
 	}
 	return id, 0
+}
+
+// DartFile names a Dart source as Dart does when it's the SDK's or a package's, and by its base
+// name otherwise (the app's own, without the build machine's folders).
+func DartFile(path string) string {
+	p := filepath.ToSlash(path)
+	cut := func(marker string) (string, bool) {
+		if i := strings.Index(p, marker); i >= 0 {
+			return p[i+len(marker):], true
+		}
+		if rest, ok := strings.CutPrefix(p, strings.TrimPrefix(marker, "/")); ok {
+			return rest, true
+		}
+		return "", false
+	}
+	if rest, ok := cut("/third_party/dart/sdk/lib/"); ok {
+		if internal, ok := strings.CutPrefix(rest, "_internal/vm/lib/"); ok {
+			return "dart:_internal/" + internal
+		}
+		return "dart:" + rest
+	}
+	if rest, ok := cut("/sky_engine/lib/"); ok {
+		return "dart:" + rest // dart:ui/painting.dart
+	}
+	if rest, ok := strings.CutPrefix(p, "lib/ui/"); ok {
+		return "dart:ui/" + rest // the engine's, relative to its source tree
+	}
+	if rest, ok := cut("/.pub-cache/hosted/"); ok {
+		// <host>/<package>-<version>/lib/<file>
+		parts := strings.SplitN(rest, "/", 4)
+		if len(parts) == 4 && parts[2] == "lib" {
+			pkg := parts[1]
+			if i := strings.LastIndex(pkg, "-"); i > 0 {
+				pkg = pkg[:i]
+			}
+			return "package:" + pkg + "/" + parts[3]
+		}
+	}
+	if rest, ok := cut("/packages/flutter/lib/"); ok {
+		return "package:flutter/" + rest
+	}
+	for _, pkg := range []string{"flutter_test", "flutter_localizations", "flutter_web_plugins"} {
+		if rest, ok := cut("/packages/" + pkg + "/lib/"); ok {
+			return "package:" + pkg + "/" + rest
+		}
+	}
+	return filepath.Base(path)
 }
